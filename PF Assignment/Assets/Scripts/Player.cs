@@ -1,23 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
     Rigidbody rb;
 
-    [SerializeField] float velocity = 1;
+    [SerializeField] float speed = 5;
+    [SerializeField] float jumpStrength = 5;
     [SerializeField] bool moveLeft = false;
-    [SerializeField] float jumpStrength = 1;
+    [SerializeField] int baseAmountOfJumps = 2;
+    [SerializeField] int amountOfJumps;
+    [SerializeField] Vector3 velocity;
+    const float raycastDistance = 0.501f;
 
-    void Awake() {
+    void Awake()
+    {
         rb = GetComponent<Rigidbody>();
         if (!rb) Debug.LogError("Rigidbody not found.");
+
+        amountOfJumps = baseAmountOfJumps;
     }
 
     void Update()
     {
-        InputMovement();
+        if (IsGrounded()) amountOfJumps = baseAmountOfJumps;
     }
 
     void FixedUpdate()
@@ -27,36 +35,54 @@ public class Player : MonoBehaviour
 
     void DefaultMovement()
     {
-        Vector3 toMove = new(velocity, rb.velocity.y, rb.velocity.z);
+        Vector3 toMove = new(speed, rb.velocity.y, rb.velocity.z);
 
         if (moveLeft) toMove.x = -toMove.x;
 
         rb.velocity = toMove;
-        //Debug.Log(rb.velocity);
 
-        if (Physics.Raycast(transform.position, new Vector3(rb.velocity.x, 0, 0), out RaycastHit hitInfo, 0.5f))
+        if (WallCollision(-0.5f) || WallCollision(0) || WallCollision(0.5f))
         {
-            if (hitInfo.transform)
-            {
-                if (hitInfo.transform.CompareTag("Structure"))
-                {
-                    moveLeft = !moveLeft;
-                    Jump();
-                }
-            }
-        }
-    }
-
-    void InputMovement()
-    {
-        if (Input.GetKey(KeyCode.W) || Input.anyKey) {
-            Debug.Log("jump");
+            moveLeft = !moveLeft;
             Jump();
         }
+
+        velocity = rb.velocity;
+    }
+
+    bool WallCollision(float yPosDelta)
+    {
+        Vector3 origin = transform.position;
+        origin.y += yPosDelta;
+
+        if (Physics.Raycast(origin, new Vector3(rb.velocity.x, 0, 0), out RaycastHit hitInfo, raycastDistance))
+        {
+            if (hitInfo.transform.CompareTag("Structure"))
+                return true;
+        }
+        
+        return false;
     }
 
     void Jump()
     {
         rb.AddForce(Vector3.up * jumpStrength, ForceMode.Impulse);
+    }
+
+    bool IsGrounded()
+    {
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hitInfo, raycastDistance))
+            return true;
+
+        return false;
+    }
+
+    public void OnJump(InputValue value)
+    {
+        if (value.Get<float>() != 0 && amountOfJumps > 0) 
+        {
+            Jump();
+            amountOfJumps--;
+        }
     }
 }
