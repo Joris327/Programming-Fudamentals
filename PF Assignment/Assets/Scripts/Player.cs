@@ -17,7 +17,7 @@ public class Player : MonoBehaviour
     [SerializeField] Vector3 velocity;
     const float raycastDistance = 0.501f;
     const float wallCollisionLowerOffset = -0.4f;
-    const float wallCollisionUpperOffset = 0.5f;
+    const float wallCollisionUpperOffset = 0.4f;
 
     void Awake()
     {
