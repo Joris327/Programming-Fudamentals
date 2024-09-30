@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Player : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {
     Rigidbody rb;
 
@@ -14,7 +14,7 @@ public class Player : MonoBehaviour
     [SerializeField] int amountOfJumps;
     [SerializeField] float jumpCooldown = 0.01f;
     [SerializeReference] float jumpTimer = 0;
-    [SerializeField] Vector3 velocity;
+    [SerializeField] Vector3 displayVelocity;
     const float raycastDistance = 0.501f;
     const float wallCollisionLowerOffset = -0.4f;
     const float wallCollisionUpperOffset = 0.4f;
@@ -53,7 +53,7 @@ public class Player : MonoBehaviour
             Jump();
         }
 
-        velocity = rb.velocity;
+        displayVelocity = rb.velocity;
     }
 
     bool WallCollision(float yPosDelta)
