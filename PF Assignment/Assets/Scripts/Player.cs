@@ -12,8 +12,12 @@ public class Player : MonoBehaviour
     [SerializeField] bool moveLeft = false;
     [SerializeField] int baseAmountOfJumps = 2;
     [SerializeField] int amountOfJumps;
+    [SerializeField] float jumpCooldown = 0.01f;
+    [SerializeReference] float jumpTimer = 0;
     [SerializeField] Vector3 velocity;
     const float raycastDistance = 0.501f;
+    const float wallCollisionLowerOffset = -0.4f;
+    const float wallCollisionUpperOffset = 0.5f;
 
     void Awake()
     {
@@ -26,6 +30,8 @@ public class Player : MonoBehaviour
     void Update()
     {
         if (IsGrounded()) amountOfJumps = baseAmountOfJumps;
+
+        jumpTimer -= Time.deltaTime;
     }
 
     void FixedUpdate()
@@ -41,7 +47,7 @@ public class Player : MonoBehaviour
 
         rb.velocity = toMove;
 
-        if (WallCollision(-0.5f) || WallCollision(0) || WallCollision(0.5f))
+        if (WallCollision(wallCollisionLowerOffset) || WallCollision(wallCollisionUpperOffset))
         {
             moveLeft = !moveLeft;
             Jump();
@@ -66,6 +72,9 @@ public class Player : MonoBehaviour
 
     void Jump()
     {
+        if (jumpTimer > 0) return;
+
+        jumpTimer = jumpCooldown;
         rb.AddForce(Vector3.up * jumpStrength, ForceMode.Impulse);
     }
 

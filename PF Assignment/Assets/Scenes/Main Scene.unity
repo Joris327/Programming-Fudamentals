@@ -803,10 +803,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
-  jumpStrength: 7.5
+  jumpStrength: 8
   moveLeft: 0
-  baseJumpAmount: 2
-  jumpAmount: 0
+  baseAmountOfJumps: 2
+  amountOfJumps: 0
+  jumpCooldown: 0.1
+  jumpTimer: 0
   velocity: {x: 0, y: 0, z: 0}
 --- !u!65 &1147958540
 BoxCollider:
