@@ -16,7 +16,7 @@ public class Pixel : ScriptableObject
         white = 9,
     }
 
-    static Dictionary<Color, Material> coloredMaterials = new(); //do NOT make readonly as VS Code recommends!
+    static Dictionary<Color, Material> coloredMaterials = new(); //do NOT make readonly as VS Code recommends! It then won't add the materials to the dictionary properly
 
     void OnEnable()
     {

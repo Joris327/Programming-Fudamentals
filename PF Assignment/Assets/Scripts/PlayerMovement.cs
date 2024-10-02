@@ -56,10 +56,10 @@ public class PlayerMovement : MonoBehaviour
         displayVelocity = rb.velocity;
     }
 
-    bool WallCollision(float yPosDelta)
+    bool WallCollision(float yPosOffset)
     {
         Vector3 origin = transform.position;
-        origin.y += yPosDelta;
+        origin.y += yPosOffset;
 
         if (Physics.Raycast(origin, new Vector3(rb.velocity.x, 0, 0), out RaycastHit hitInfo, raycastDistance))
         {
