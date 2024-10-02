@@ -4,16 +4,5 @@ using UnityEngine;
 
 public class Painter : MonoBehaviour
 {
-    public enum Color {
-        red,
-        green,
-        blue,
-        orange,
-        purple,
-        yellow,
-        white,
-        black
-    }
-
-    public Color color;
+    public Pixel.Color color;
 }
