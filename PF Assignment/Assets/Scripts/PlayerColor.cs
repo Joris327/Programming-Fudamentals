@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class PlayerColor : MonoBehaviour
 {
+    [SerializeField] GameManager gameManager;
+
     Renderer playerRenderer;
 
-    [SerializeField] Pixel.Color startColor = 0;
+    [SerializeField] GameManager.Color startColor = 0;
 
     bool r = false;
     bool g = false;
@@ -16,11 +18,13 @@ public class PlayerColor : MonoBehaviour
     {
         playerRenderer = GetComponent<Renderer>();
         if (!playerRenderer) Debug.LogError("Could not find a Renderer component");
+
+        playerRenderer.material = gameManager.GetMaterial(startColor);
     }
 
     void Start()
     {
-        playerRenderer.material = Pixel.GetMaterial(startColor);
+        gameManager.AdaptFilters(startColor);
     }
 
     void OnTriggerEnter(Collider other)
@@ -31,30 +35,33 @@ public class PlayerColor : MonoBehaviour
         AddColor(p.color);
     }
 
-    void AddColor(Pixel.Color color)
+    void AddColor(GameManager.Color color)
     {
         switch (color)
         {
-            case Pixel.Color.black:
+            case GameManager.Color.black:
                 r = false;
                 g = false;
                 b = false;
-                playerRenderer.material = Pixel.GetMaterial(Pixel.Color.black);
+                playerRenderer.material = gameManager.GetMaterial(GameManager.Color.black);
+                gameManager.AdaptFilters(color);
                 return;
 
-            case Pixel.Color.red:    r = true; break;
-            case Pixel.Color.green:  g = true; break;
-            case Pixel.Color.blue:   b = true; break;
+            case GameManager.Color.red:    r = true; break;
+            case GameManager.Color.green:  g = true; break;
+            case GameManager.Color.blue:   b = true; break;
 
             default: return;
         }
 
         float colorValue = 0;
 
-        if (r) colorValue += (int)Pixel.Color.red;
-        if (g) colorValue += (int)Pixel.Color.green;
-        if (b) colorValue += (int)Pixel.Color.blue;
+        if (r) colorValue += (int)GameManager.Color.red;
+        if (g) colorValue += (int)GameManager.Color.green;
+        if (b) colorValue += (int)GameManager.Color.blue;
 
-        playerRenderer.material = Pixel.GetMaterial((Pixel.Color)colorValue);
+        playerRenderer.material = gameManager.GetMaterial((GameManager.Color)colorValue);
+
+        gameManager.AdaptFilters(color);
     }
 }

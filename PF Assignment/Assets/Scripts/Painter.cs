@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class Painter : MonoBehaviour
 {
-    public Pixel.Color color;
+    public GameManager.Color color;
 }

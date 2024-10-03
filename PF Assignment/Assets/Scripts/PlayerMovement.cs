@@ -29,8 +29,6 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (IsGrounded()) amountOfJumps = baseAmountOfJumps;
-
         jumpTimer -= Time.deltaTime;
     }
 
@@ -51,6 +49,7 @@ public class PlayerMovement : MonoBehaviour
         {
             moveLeft = !moveLeft;
             Jump();
+            amountOfJumps = baseAmountOfJumps;
         }
 
         displayVelocity = rb.velocity;
@@ -81,13 +80,18 @@ public class PlayerMovement : MonoBehaviour
     bool IsGrounded()
     {
         if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hitInfo, raycastDistance))
-            return true;
-
+            if (hitInfo.transform.CompareTag("Structure"))
+            {
+                return true;
+            }
+        
         return false;
     }
 
     public void OnJump(InputValue value)
     {
+        if (IsGrounded()) amountOfJumps = baseAmountOfJumps;
+
         if (value.Get<float>() != 0 && amountOfJumps > 0) 
         {
             Jump();

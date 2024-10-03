@@ -2,8 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Pixel", menuName = "ScriptableObject/Pixel")]
-public class Pixel : ScriptableObject
+public class GameManager : MonoBehaviour
 {
     public enum Color {
         black = 0,
@@ -16,9 +15,11 @@ public class Pixel : ScriptableObject
         white = 9,
     }
 
-    static Dictionary<Color, Material> coloredMaterials = new(); //do NOT make readonly as VS Code recommends! It then won't add the materials to the dictionary properly
+    public List<Filter> filters = new();
 
-    void OnEnable()
+    public Dictionary<Color, Material> coloredMaterials = new();
+
+    void Awake()
     {
         coloredMaterials.Add(Color.black,  Resources.Load<Material>("Pixel Colors/Black"));
         coloredMaterials.Add(Color.red,    Resources.Load<Material>("Pixel Colors/Red"));
@@ -30,8 +31,17 @@ public class Pixel : ScriptableObject
         coloredMaterials.Add(Color.white,  Resources.Load<Material>("Pixel Colors/White"));
     }
 
-    public static Material GetMaterial(Color color)
+    public Material GetMaterial(Color color)
     {
         return coloredMaterials[color];
+    }
+
+    public void AdaptFilters(Color color)
+    {
+        foreach (Filter f in filters)
+        {
+            if (f.color == color) f.filterCollider.enabled = false;
+            else f.filterCollider.enabled = true;
+        }
     }
 }
