@@ -63,7 +63,7 @@ public class PlayerMovement : MonoBehaviour
         if (jumpInput && jumpHeap > 0)
         {
             jumpHeap--;
-
+            
             Jump();
         }
 
