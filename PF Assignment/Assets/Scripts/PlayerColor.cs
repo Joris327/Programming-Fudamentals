@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerColor : MonoBehaviour
 {
-    [SerializeField] GameManager gameManager;
-
+    GameManager gameManager;
     Renderer playerRenderer;
 
     [SerializeField] GameManager.Color startColor = 0;
@@ -18,12 +18,13 @@ public class PlayerColor : MonoBehaviour
     {
         playerRenderer = GetComponent<Renderer>();
         if (!playerRenderer) Debug.LogError("Could not find a Renderer component");
-
-        playerRenderer.material = gameManager.GetMaterial(startColor);
     }
 
     void Start()
     {
+        gameManager = GameManager.instance;
+        
+        playerRenderer.material = gameManager.GetMaterial(startColor);
         gameManager.AdaptFilters(startColor);
     }
 
@@ -43,8 +44,7 @@ public class PlayerColor : MonoBehaviour
                 r = false;
                 g = false;
                 b = false;
-                playerRenderer.material = gameManager.GetMaterial(GameManager.Color.black);
-                gameManager.AdaptFilters(color);
+                SetColor(GameManager.Color.black);
                 return;
 
             case GameManager.Color.red:    r = true; break;
@@ -60,7 +60,12 @@ public class PlayerColor : MonoBehaviour
         if (g) colorValue += (int)GameManager.Color.green;
         if (b) colorValue += (int)GameManager.Color.blue;
 
-        playerRenderer.material = gameManager.GetMaterial((GameManager.Color)colorValue);
+        SetColor((GameManager.Color)colorValue);
+    }
+
+    void SetColor(GameManager.Color color)
+    {
+        playerRenderer.material = gameManager.GetMaterial(color);
 
         gameManager.AdaptFilters(color);
     }

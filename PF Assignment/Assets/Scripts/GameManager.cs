@@ -1,9 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager : ScriptableSingleton<GameManager>
 {
+    int _pickupsCount = 0;
+    public int PickupsCount { get{ return _pickupsCount; } }
+
     public enum Color {
         black = 0,
         red = 2,
@@ -19,8 +23,11 @@ public class GameManager : MonoBehaviour
 
     public Dictionary<Color, Material> coloredMaterials = new();
 
-    void Awake()
+    void OnEnable()
     {
+        _pickupsCount = 0;
+
+        coloredMaterials.Clear();
         coloredMaterials.Add(Color.black,  Resources.Load<Material>("Pixel Colors/Black"));
         coloredMaterials.Add(Color.red,    Resources.Load<Material>("Pixel Colors/Red"));
         coloredMaterials.Add(Color.green,  Resources.Load<Material>("Pixel Colors/Green"));
@@ -43,5 +50,10 @@ public class GameManager : MonoBehaviour
             if (f.color == color) f.filterCollider.enabled = false;
             else f.filterCollider.enabled = true;
         }
+    }
+
+    public void IncrementPickupCount()
+    {
+        _pickupsCount++;
     }
 }

@@ -7,29 +7,29 @@ public class PlayerMovement : MonoBehaviour
 {
     Rigidbody rb;
 
+    [Header("Movement")]
     [SerializeField] float speed = 5;
-    [SerializeField] float jumpStrength = 5;
     [SerializeField] bool moveLeft = false;
-    [SerializeField] int baseAmountOfJumps = 2;
-    [SerializeField] int amountOfJumps;
-    [SerializeField] float jumpCooldown = 0.01f;
-    [SerializeReference] float jumpTimer = 0;
+    const float wallCollisionOffset = 0.4f;
+
+    [Header("Jumping")]
+    [SerializeField] bool jumpInput = false;
+    [SerializeField] float jumpStrength = 8;
+    [SerializeField] float yVelocityLimit = 10;
+    [SerializeField] int baseJumpHeap = 2;
+    [SerializeField] int jumpHeap;
+    const float groundCollisionOffset = 0.4f;
+
+    [Header("Other")]
     [SerializeField] Vector3 displayVelocity;
     const float raycastDistance = 0.501f;
-    const float wallCollisionLowerOffset = -0.4f;
-    const float wallCollisionUpperOffset = 0.4f;
-
+    
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         if (!rb) Debug.LogError("Rigidbody not found.");
 
-        amountOfJumps = baseAmountOfJumps;
-    }
-
-    void Update()
-    {
-        jumpTimer -= Time.deltaTime;
+        jumpHeap = baseJumpHeap;
     }
 
     void FixedUpdate()
@@ -45,25 +45,51 @@ public class PlayerMovement : MonoBehaviour
 
         rb.velocity = toMove;
 
-        if (WallCollision(wallCollisionLowerOffset) || WallCollision(wallCollisionUpperOffset))
+        //if (colliding with wall)
+        if (Raycast(new Vector3(0,  wallCollisionOffset, 0), new Vector3(rb.velocity.x, 0, 0)) ||
+            Raycast(new Vector3(0, -wallCollisionOffset, 0), new Vector3(rb.velocity.x, 0, 0)))
         {
             moveLeft = !moveLeft;
             Jump();
-            amountOfJumps = baseAmountOfJumps;
+        }
+
+        //if (Grounded)
+        if (Raycast(new Vector3( groundCollisionOffset,  0, 0), Vector3.down) ||
+            Raycast(new Vector3(-groundCollisionOffset,  0, 0), Vector3.down))
+        {
+            jumpHeap = baseJumpHeap;
+        }
+
+        if (jumpInput && jumpHeap > 0)
+        {
+            jumpHeap--;
+
+            Jump();
+        }
+
+        jumpInput = false;
+
+        if (rb.velocity.y > yVelocityLimit)
+        {
+            Vector3 velocity = rb.velocity;
+            velocity.y = yVelocityLimit;
+            rb.velocity = velocity;
         }
 
         displayVelocity = rb.velocity;
     }
 
-    bool WallCollision(float yPosOffset)
+    bool Raycast(Vector3 originOffset, Vector3 direction)
     {
         Vector3 origin = transform.position;
-        origin.y += yPosOffset;
-
-        if (Physics.Raycast(origin, new Vector3(rb.velocity.x, 0, 0), out RaycastHit hitInfo, raycastDistance))
+        origin += originOffset;
+        
+        if (Physics.Raycast(origin, direction, out RaycastHit hitInfo, raycastDistance))
         {
             if (hitInfo.transform.CompareTag("Structure"))
+            {
                 return true;
+            }
         }
         
         return false;
@@ -71,31 +97,23 @@ public class PlayerMovement : MonoBehaviour
 
     void Jump()
     {
-        if (jumpTimer > 0) return;
-
-        jumpTimer = jumpCooldown;
         rb.AddForce(Vector3.up * jumpStrength, ForceMode.Impulse);
     }
 
-    bool IsGrounded()
+    public void OnJump(InputValue v)
     {
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hitInfo, raycastDistance))
-            if (hitInfo.transform.CompareTag("Structure"))
-            {
-                return true;
-            }
-        
-        return false;
+        if (v.Get<float>() > 0)
+        {
+            jumpInput = true;
+        }
     }
 
-    public void OnJump(InputValue value)
+    void OnTriggerEnter(Collider other)
     {
-        if (IsGrounded()) amountOfJumps = baseAmountOfJumps;
-
-        if (value.Get<float>() != 0 && amountOfJumps > 0) 
+        if (other.CompareTag("Pickup"))
         {
-            Jump();
-            amountOfJumps--;
+            GameManager.instance.IncrementPickupCount();
+            Destroy(other.gameObject);
         }
     }
 }
