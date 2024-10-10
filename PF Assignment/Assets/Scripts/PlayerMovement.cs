@@ -13,11 +13,11 @@ public class PlayerMovement : MonoBehaviour
     const float wallCollisionOffset = 0.4f;
 
     [Header("Jumping")]
-    [SerializeField] bool jumpInput = false;
+    bool jumpInput = false;
     [SerializeField] float jumpStrength = 8;
     [SerializeField] float yVelocityLimit = 10;
     [SerializeField] int baseJumpHeap = 2;
-    [SerializeField] int jumpHeap;
+    int jumpHeap;
     const float groundCollisionOffset = 0.4f;
 
     [Header("Other")]
