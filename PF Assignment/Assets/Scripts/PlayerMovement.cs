@@ -14,8 +14,9 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Jumping")]
     bool jumpInput = false;
-    [SerializeField] float jumpStrength = 8;
-    [SerializeField] float yVelocityLimit = 10;
+    [SerializeField, Tooltip("How high the player will jump when getting input from the keyboard")] float inputJumpStrength = 10.5f;
+    [SerializeField, Tooltip("How high the player will jump when hitting a wall")] float wallJumpStrength = 8f;
+    [SerializeField] float yVelocityLimit = 12;
     [SerializeField] int baseJumpHeap = 2;
     int jumpHeap;
     const float groundCollisionOffset = 0.4f;
@@ -50,7 +51,7 @@ public class PlayerMovement : MonoBehaviour
             Raycast(new Vector3(0, -wallCollisionOffset, 0), new Vector3(rb.velocity.x, 0, 0)))
         {
             moveLeft = !moveLeft;
-            Jump();
+            Jump(wallJumpStrength);
         }
 
         //if (Grounded)
@@ -64,7 +65,7 @@ public class PlayerMovement : MonoBehaviour
         {
             jumpHeap--;
             
-            Jump();
+            Jump(inputJumpStrength);
         }
 
         jumpInput = false;
@@ -95,7 +96,7 @@ public class PlayerMovement : MonoBehaviour
         return false;
     }
 
-    void Jump()
+    void Jump(float jumpStrength)
     {
         rb.AddForce(Vector3.up * jumpStrength, ForceMode.Impulse);
     }
