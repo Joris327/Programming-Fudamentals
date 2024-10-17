@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement")]
     [SerializeField] float speed = 5;
     [SerializeField] bool moveLeft = false;
+    bool hitWall = false;
     const float wallCollisionOffset = 0.4f;
 
     [Header("Jumping")]
@@ -40,18 +41,18 @@ public class PlayerMovement : MonoBehaviour
 
     void DefaultMovement()
     {
-        Vector3 toMove = new(speed, rb.velocity.y, rb.velocity.z);
-
-        if (moveLeft) toMove.x = -toMove.x;
-
-        rb.velocity = toMove;
+        if (hitWall)
+        {
+            Jump(wallJumpStrength);
+            hitWall = false;
+        }
 
         //if (colliding with wall)
         if (Raycast(new Vector3(0,  wallCollisionOffset, 0), new Vector3(rb.velocity.x, 0, 0)) ||
             Raycast(new Vector3(0, -wallCollisionOffset, 0), new Vector3(rb.velocity.x, 0, 0)))
         {
             moveLeft = !moveLeft;
-            Jump(wallJumpStrength);
+            hitWall = true;
         }
 
         //if (Grounded)
@@ -69,6 +70,10 @@ public class PlayerMovement : MonoBehaviour
         }
 
         jumpInput = false;
+
+        Vector3 toMove = new(speed, rb.velocity.y, rb.velocity.z);
+        if (moveLeft) toMove.x = -toMove.x;
+        rb.velocity = toMove;
 
         if (rb.velocity.y > yVelocityLimit)
         {
