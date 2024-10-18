@@ -121,5 +121,14 @@ public class PlayerMovement : MonoBehaviour
             GameManager.instance.IncrementPickupCount();
             Destroy(other.gameObject);
         }
+        if (other.CompareTag("Finish"))
+        {
+            GameManager.instance.SceneNavigation();
+        }
+    }
+
+    public void OnPause(InputValue v)
+    {
+        GameManager.instance.SceneNavigation();
     }
 }

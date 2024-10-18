@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class GameManager : ScriptableSingleton<GameManager>
@@ -58,13 +59,26 @@ public class GameManager : ScriptableSingleton<GameManager>
         _pickupsCount++;
     }
 
-    public void StartGame()
-    {
-        SceneManager.LoadSceneAsync(1);
-    }
-
     public void Quit()
     {
         Application.Quit();
+    }
+
+    public void SceneNavigation() //very temporary code fo navigating scenes
+    {
+        int currentScene = SceneManager.GetActiveScene().buildIndex;
+
+        if (currentScene == 0)
+        {
+            Quit();
+        }
+        else if (currentScene == 1)
+        {
+            SceneManager.LoadSceneAsync(2);
+        }
+        else
+        {
+            SceneManager.LoadScene(0);
+        }
     }
 }
