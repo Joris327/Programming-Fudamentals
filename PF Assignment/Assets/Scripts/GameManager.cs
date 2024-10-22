@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class GameManager : ScriptableSingleton<GameManager>
@@ -10,7 +9,7 @@ public class GameManager : ScriptableSingleton<GameManager>
     int _pickupsCount = 0;
     public int PickupsCount { get{ return _pickupsCount; } }
 
-    public enum Color {
+    public enum Color { 
         black = 0,
         red = 2,
         green = 3,
@@ -30,14 +29,16 @@ public class GameManager : ScriptableSingleton<GameManager>
         _pickupsCount = 0;
 
         coloredMaterials.Clear();
-        coloredMaterials.Add(Color.black,  Resources.Load<Material>("Pixel Colors/Black"));
-        coloredMaterials.Add(Color.red,    Resources.Load<Material>("Pixel Colors/Red"));
-        coloredMaterials.Add(Color.green,  Resources.Load<Material>("Pixel Colors/Green"));
-        coloredMaterials.Add(Color.blue,   Resources.Load<Material>("Pixel Colors/Blue"));
-        coloredMaterials.Add(Color.orange, Resources.Load<Material>("Pixel Colors/Orange"));
-        coloredMaterials.Add(Color.purple, Resources.Load<Material>("Pixel Colors/Purple"));
-        coloredMaterials.Add(Color.yellow, Resources.Load<Material>("Pixel Colors/Yellow"));
-        coloredMaterials.Add(Color.white,  Resources.Load<Material>("Pixel Colors/White"));
+        coloredMaterials.Add(Color.black,  Resources.Load<Material>("Player Materials/Black"));
+        coloredMaterials.Add(Color.red,    Resources.Load<Material>("Player Materials/Red"));
+        coloredMaterials.Add(Color.green,  Resources.Load<Material>("Player Materials/Green"));
+        coloredMaterials.Add(Color.blue,   Resources.Load<Material>("Player Materials/Blue"));
+        coloredMaterials.Add(Color.orange, Resources.Load<Material>("Player Materials/Orange"));
+        coloredMaterials.Add(Color.purple, Resources.Load<Material>("Player Materials/Purple"));
+        coloredMaterials.Add(Color.yellow, Resources.Load<Material>("Player Materials/Yellow"));
+        coloredMaterials.Add(Color.white,  Resources.Load<Material>("Player Materials/White"));
+
+        Debug.Log("Gamemanager Enabled at: " + Time.time);
     }
 
     public Material GetMaterial(Color color)
@@ -64,7 +65,7 @@ public class GameManager : ScriptableSingleton<GameManager>
         Application.Quit();
     }
 
-    public void SceneNavigation() //very temporary code fo navigating scenes
+    public void SceneNavigation() //very temporary code for navigating scenes
     {
         int currentScene = SceneManager.GetActiveScene().buildIndex;
 

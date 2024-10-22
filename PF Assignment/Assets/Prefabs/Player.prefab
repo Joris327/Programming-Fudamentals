@@ -53,7 +53,7 @@ MonoBehaviour:
   speed: 5
   moveLeft: 0
   inputJumpStrength: 10.5
-  wallJumpStrength: 7.5
+  wallJumpStrength: 7.7
   yVelocityLimit: 13
   baseJumpHeap: 2
   displayVelocity: {x: 0, y: 0, z: 0}

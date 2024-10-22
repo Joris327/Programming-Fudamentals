@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(Rigidbody))]
 public class PlayerMovement : MonoBehaviour
 {
     Rigidbody rb;
@@ -11,20 +12,21 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float speed = 5;
     [SerializeField] bool moveLeft = false;
     bool hitWall = false;
-    const float wallCollisionOffset = 0.4f;
+    readonly Vector3 wallCollisionOffset = new(0, 0.4f, 0);
 
     [Header("Jumping")]
     bool jumpInput = false;
     [SerializeField, Tooltip("How high the player will jump when getting input from the keyboard")] float inputJumpStrength = 10.5f;
-    [SerializeField, Tooltip("How high the player will jump when hitting a wall")] float wallJumpStrength = 8f;
-    [SerializeField] float yVelocityLimit = 12;
+    [SerializeField, Tooltip("How high the player will jump when hitting a wall")] float wallJumpStrength = 7.7f;
+    [SerializeField] float yVelocityLimit = 13;
     [SerializeField] int baseJumpHeap = 2;
     int jumpHeap;
-    const float groundCollisionOffset = 0.4f;
+    readonly Vector3 groundCollisionOffset = new(0.4f, 0, 0);
 
     [Header("Other")]
     [SerializeField] Vector3 displayVelocity;
     const float raycastDistance = 0.501f;
+    Vector3 lastPos = new();
     
     void Awake()
     {
@@ -36,60 +38,69 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        DefaultMovement();
+        VerticalMovement();
+        HorizontalMovement();
+
+        lastPos = transform.position;
+        displayVelocity = rb.velocity;
     }
 
-    void DefaultMovement()
+    void VerticalMovement()
     {
         if (hitWall)
         {
-            Jump(wallJumpStrength);
+            Jump(false);
             hitWall = false;
         }
 
-        //if (colliding with wall)
-        if (Raycast(new Vector3(0,  wallCollisionOffset, 0), new Vector3(rb.velocity.x, 0, 0)) ||
-            Raycast(new Vector3(0, -wallCollisionOffset, 0), new Vector3(rb.velocity.x, 0, 0)))
+        if (IsCollidingWithWall() ||
+            lastPos == transform.position) // <- if we haven't moved since last frame we are probably stuck in a corner and we should reverse course.
         {
             moveLeft = !moveLeft;
             hitWall = true;
         }
 
-        //if (Grounded)
-        if (Raycast(new Vector3( groundCollisionOffset,  0, 0), Vector3.down) ||
-            Raycast(new Vector3(-groundCollisionOffset,  0, 0), Vector3.down))
+        if (IsGrounded())
         {
             jumpHeap = baseJumpHeap;
         }
 
-        if (jumpInput && jumpHeap > 0)
-        {
-            jumpHeap--;
-            
-            Jump(inputJumpStrength);
-        }
+        if (jumpInput && jumpHeap > 0) Jump(true);
+    }
 
-        jumpInput = false;
-
+    void HorizontalMovement()
+    {
         Vector3 toMove = new(speed, rb.velocity.y, rb.velocity.z);
         if (moveLeft) toMove.x = -toMove.x;
         rb.velocity = toMove;
 
-        if (rb.velocity.y > yVelocityLimit)
+        if (rb.velocity.y > yVelocityLimit) //clamp positive Y velocity to prevent player from jumping way higher than desired.
         {
             Vector3 velocity = rb.velocity;
             velocity.y = yVelocityLimit;
             rb.velocity = velocity;
         }
-
-        displayVelocity = rb.velocity;
     }
 
-    bool Raycast(Vector3 originOffset, Vector3 direction)
+    bool IsCollidingWithWall()
     {
-        Vector3 origin = transform.position;
-        origin += originOffset;
-        
+        Vector3 direction = new(rb.velocity.x, 0, 0);
+        if (Raycast(transform.position + wallCollisionOffset, direction)) return true;
+        if (Raycast(transform.position - wallCollisionOffset, direction)) return true;
+
+        return false;
+    }
+
+    bool IsGrounded()
+    {
+        if (Raycast(transform.position + groundCollisionOffset, Vector3.down)) return true;
+        if (Raycast(transform.position - groundCollisionOffset, Vector3.down)) return true;
+
+        return false;
+    }
+
+    bool Raycast(Vector3 origin, Vector3 direction)
+    {
         if (Physics.Raycast(origin, direction, out RaycastHit hitInfo, raycastDistance))
         {
             if (hitInfo.transform.CompareTag("Structure"))
@@ -97,18 +108,39 @@ public class PlayerMovement : MonoBehaviour
                 return true;
             }
         }
+
+        //Debug.DrawRay(origin, direction * raycastDistance, Color.red, 1);
         
         return false;
     }
 
-    void Jump(float jumpStrength)
+    void Jump(bool fromPlayerInput)
     {
-        rb.AddForce(Vector3.up * jumpStrength, ForceMode.Impulse);
+        if (!fromPlayerInput)
+        {
+            rb.AddForce(Vector3.up * wallJumpStrength, ForceMode.Impulse);
+            return;
+        }
+
+        if (rb.velocity.y < 0)
+        //if falling down: set Y to zero so that when we apply jumpforce we actually go up.
+        {
+            rb.velocity = new(
+                rb.velocity.x,
+                0,
+                rb.velocity.z
+            );
+        }
+
+        rb.AddForce(Vector3.up * inputJumpStrength, ForceMode.Impulse);
+
+        jumpHeap--;
+        jumpInput = false;
     }
 
     public void OnJump(InputValue v)
     {
-        if (v.Get<float>() > 0)
+        if (v.Get<float>() > 0 && jumpHeap > 0)
         {
             jumpInput = true;
         }
@@ -119,8 +151,10 @@ public class PlayerMovement : MonoBehaviour
         if (other.CompareTag("Pickup"))
         {
             GameManager.instance.IncrementPickupCount();
+
             Destroy(other.gameObject);
         }
+
         if (other.CompareTag("Finish"))
         {
             GameManager.instance.SceneNavigation();
