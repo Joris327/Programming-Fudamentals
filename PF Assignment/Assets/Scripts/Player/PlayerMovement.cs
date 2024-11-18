@@ -8,6 +8,9 @@ public class PlayerMovement : MonoBehaviour
 {
     Rigidbody rb;
 
+    [SerializeField] GameObject particlesMoveleft;
+    [SerializeField] GameObject particlesMoveRight;
+
     [Header("Movement")]
     [SerializeField] float speed = 5;
     [SerializeField] bool moveLeft = false;
@@ -58,6 +61,9 @@ public class PlayerMovement : MonoBehaviour
         {
             moveLeft = !moveLeft;
             hitWall = true;
+
+            //particlesMoveleft.SetActive(moveLeft);
+            //particlesMoveRight.SetActive(!moveLeft);
         }
 
         if (IsGrounded())

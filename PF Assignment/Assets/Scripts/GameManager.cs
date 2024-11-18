@@ -50,8 +50,8 @@ public class GameManager : ScriptableSingleton<GameManager>
     {
         foreach (Filter f in filters)
         {
-            if (f.color == color) f.filterCollider.enabled = false;
-            else f.filterCollider.enabled = true;
+            if (f.Color == color) f.AllowPassage(true);
+            else f.AllowPassage(false);
         }
     }
 

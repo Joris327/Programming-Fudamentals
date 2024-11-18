@@ -1,38 +1,38 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
+[RequireComponent(typeof(Renderer))]
+[RequireComponent(typeof(Light))]
 public class PlayerColor : MonoBehaviour
 {
-    GameManager gameManager;
-    Renderer playerRenderer;
+    GameManager _gameManager;
+    Renderer _playerRenderer;
+    Light _playerLight;
 
-    [SerializeField] GameManager.Color startColor = 0;
+    [SerializeField] GameManager.Color _startColor = 0;
 
-    bool r = false;
-    bool g = false;
-    bool b = false;
+    bool _r = false;
+    bool _g = false;
+    bool _b = false;
 
     void Awake()
     {
-        playerRenderer = GetComponent<Renderer>();
-        if (!playerRenderer) Debug.LogError("Could not find a Renderer component");
+        if (!TryGetComponent<Renderer>(out _playerRenderer)) _playerRenderer = gameObject.AddComponent<Renderer>();
+        if (!TryGetComponent<Light   >(out _playerLight   )) _playerLight    = gameObject.AddComponent<Light   >();
     }
 
     void Start()
     {
-        gameManager = GameManager.instance;
+        _gameManager = GameManager.instance;
         
-        playerRenderer.material = gameManager.GetMaterial(startColor);
-        gameManager.AdaptFilters(startColor);
+        SetColor(_startColor);
     }
 
     void OnTriggerEnter(Collider other)
     {
-        Painter p = other.GetComponent<Painter>();
-        if (!p) return;
-        
+        if (!other.TryGetComponent<Painter>(out Painter p)) return;
+
         AddColor(p.color);
     }
 
@@ -41,32 +41,43 @@ public class PlayerColor : MonoBehaviour
         switch (color)
         {
             case GameManager.Color.black:
-                r = false;
-                g = false;
-                b = false;
+                _r = false;
+                _g = false;
+                _b = false;
                 SetColor(GameManager.Color.black);
                 return;
 
-            case GameManager.Color.red:    r = true; break;
-            case GameManager.Color.green:  g = true; break;
-            case GameManager.Color.blue:   b = true; break;
+            case GameManager.Color.red:
+                _r = true;
+                break;
 
-            default: return;
+            case GameManager.Color.green:
+                _g = true;
+                break;
+
+            case GameManager.Color.blue:
+                _b = true;
+                break;
+
+            default:
+                return;
         }
 
         float colorValue = 0;
 
-        if (r) colorValue += (int)GameManager.Color.red;
-        if (g) colorValue += (int)GameManager.Color.green;
-        if (b) colorValue += (int)GameManager.Color.blue;
+        if (_r) colorValue += (int)GameManager.Color.red;
+        if (_g) colorValue += (int)GameManager.Color.green;
+        if (_b) colorValue += (int)GameManager.Color.blue;
 
         SetColor((GameManager.Color)colorValue);
     }
 
     void SetColor(GameManager.Color color)
     {
-        playerRenderer.material = gameManager.GetMaterial(color);
+        Material newMaterial = _gameManager.GetMaterial(color);
+        _playerRenderer.material = newMaterial;
+        _playerLight.color = newMaterial.color;
 
-        gameManager.AdaptFilters(color);
+        _gameManager.AdaptFilters(color);
     }
 }
