@@ -15458,7 +15458,7 @@ MonoBehaviour:
   moveLeft: 0
   inputJumpStrength: 10.5
   wallJumpStrength: 7.7
-  yVelocityLimit: 13
+  yVelocityLimit: 12
   baseJumpHeap: 2
   displayVelocity: {x: 0, y: 0, z: 0}
 --- !u!114 &1909898891569811665

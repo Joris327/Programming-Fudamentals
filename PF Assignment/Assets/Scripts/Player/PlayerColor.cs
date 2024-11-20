@@ -24,7 +24,7 @@ public class PlayerColor : MonoBehaviour
 
     void Start()
     {
-        _gameManager = GameManager.instance;
+        _gameManager = GameManager.Instance;
         
         SetColor(_startColor);
     }

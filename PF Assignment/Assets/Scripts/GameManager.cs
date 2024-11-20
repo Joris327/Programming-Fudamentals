@@ -2,12 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class GameManager : ScriptableSingleton<GameManager>
+[CreateAssetMenu(fileName = "GameManager.asset", menuName = "ScriptableObjects/Singletons/GameManager")]
+public class GameManager : ScriptableObject
 {
+    public static GameManager Instance;
+
     int _pickupsCount = 0;
     public int PickupsCount { get{ return _pickupsCount; } }
+
+    [HideInInspector] public List<Filter> filters = new();
+
+    public Dictionary<Color, Material> coloredMaterials = new();
 
     public enum Color { 
         black = 0,
@@ -20,12 +26,20 @@ public class GameManager : ScriptableSingleton<GameManager>
         white = 9,
     }
 
-    public List<Filter> filters = new();
-
-    public Dictionary<Color, Material> coloredMaterials = new();
-
-    void OnEnable()
+    public void OnEnable()
     {
+        Setup();
+    }
+
+    public void Awake()
+    {
+        Setup();
+    }
+
+    void Setup()
+    {
+        if (!Instance) Instance = this;
+        
         _pickupsCount = 0;
 
         coloredMaterials.Clear();
@@ -58,28 +72,5 @@ public class GameManager : ScriptableSingleton<GameManager>
     public void IncrementPickupCount()
     {
         _pickupsCount++;
-    }
-
-    public void Quit()
-    {
-        Application.Quit();
-    }
-
-    public void SceneNavigation() //very temporary code for navigating scenes
-    {
-        int currentScene = SceneManager.GetActiveScene().buildIndex;
-
-        if (currentScene == 0)
-        {
-            Quit();
-        }
-        else if (currentScene == 1)
-        {
-            SceneManager.LoadSceneAsync(2);
-        }
-        else
-        {
-            SceneManager.LoadScene(0);
-        }
     }
 }

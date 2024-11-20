@@ -15,18 +15,19 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float speed = 5;
     [SerializeField] bool moveLeft = false;
     bool hitWall = false;
-    readonly Vector3 wallCollisionOffset = new(0, 0.4f, 0);
+    readonly Vector3 wallCollisionOffset = new(0, 0.45f, 0);
 
     [Header("Jumping")]
     bool jumpInput = false;
     [SerializeField, Tooltip("How high the player will jump when getting input from the keyboard")] float inputJumpStrength = 10.5f;
     [SerializeField, Tooltip("How high the player will jump when hitting a wall")] float wallJumpStrength = 7.7f;
-    [SerializeField] float yVelocityLimit = 13;
+    [SerializeField] float yVelocityLimit = 12;
     [SerializeField] int baseJumpHeap = 2;
     int jumpHeap;
     readonly Vector3 groundCollisionOffset = new(0.4f, 0, 0);
 
     [Header("Other")]
+    [SerializeField] SceneLoader _sceneLoader;
     [SerializeField] Vector3 displayVelocity;
     const float raycastDistance = 0.501f;
     Vector3 lastPos = new();
@@ -122,6 +123,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Jump(bool fromPlayerInput)
     {
+        /**/
         if (!fromPlayerInput)
         {
             rb.AddForce(Vector3.up * wallJumpStrength, ForceMode.Impulse);
@@ -139,7 +141,23 @@ public class PlayerMovement : MonoBehaviour
         }
 
         rb.AddForce(Vector3.up * inputJumpStrength, ForceMode.Impulse);
+        /**/
+        /**
+        Vector3 newVelocity = new(
+            rb.velocity.x,
+            0,
+            rb.velocity.z
+        );
+        
+        if (fromPlayerInput) newVelocity.y = inputJumpStrength;
+        else {
+            newVelocity.y = wallJumpStrength;
+            rb.velocity = newVelocity;
+            return;
+        }
 
+        rb.velocity = newVelocity;
+        /**/
         jumpHeap--;
         jumpInput = false;
     }
@@ -156,19 +174,19 @@ public class PlayerMovement : MonoBehaviour
     {
         if (other.CompareTag("Pickup"))
         {
-            GameManager.instance.IncrementPickupCount();
+            GameManager.Instance.IncrementPickupCount();
 
             Destroy(other.gameObject);
         }
 
         if (other.CompareTag("Finish"))
         {
-            GameManager.instance.SceneNavigation();
+            SceneLoader.Instance.LoadNextScene();
         }
     }
 
     public void OnPause(InputValue v)
     {
-        GameManager.instance.SceneNavigation();
+        SceneLoader.Instance.LoadScene(0);
     }
 }

@@ -17,11 +17,9 @@ public class Filter : MonoBehaviour
     void Awake()
     {
         if (!TryGetComponent<Renderer>(out _filterRenderer)) _filterRenderer = gameObject.AddComponent<Renderer>();
-        //_filterCollider = GetComponent<Collider>();
-        //if ( ! _filterCollider) Debug.LogError("Could not find Collider");
         if (!TryGetComponent<Collider>(out _filterCollider)) _filterCollider = gameObject.AddComponent<BoxCollider>();
 
-        GameManager.instance.filters.Add(this);
+        GameManager.Instance.filters.Add(this);
     }
 
     public void AllowPassage(bool set)
@@ -32,11 +30,11 @@ public class Filter : MonoBehaviour
         if (set) c.a = _alphaValue;
         else c.a = 1;
         _filterRenderer.material.SetColor("_BaseColor", c);
-        Debug.Log(c.a + ", " + _filterRenderer.material.color.a);
+        //Debug.Log(c.a + ", " + _filterRenderer.material.color.a);
     }
 
     void OnDestroy()
     {
-        GameManager.instance.filters.Remove(this);
+        GameManager.Instance.filters.Remove(this);
     }
 }

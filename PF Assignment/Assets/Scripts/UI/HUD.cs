@@ -9,6 +9,6 @@ public class HUD : MonoBehaviour
 
     void Update()
     {
-        pickupText.text = GameManager.instance.PickupsCount.ToString();
+        pickupText.text = GameManager.Instance.PickupsCount.ToString();
     }
 }
