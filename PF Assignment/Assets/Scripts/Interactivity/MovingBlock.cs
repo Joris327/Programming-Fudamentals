@@ -12,6 +12,7 @@ public class MovingBlock : MonoBehaviour
     [SerializeField] bool _canMove = false;
     [SerializeField] bool _showPoints = true;
     
+    Rigidbody rb;
     Vector3 _startPos;
     
     void Awake()
@@ -20,6 +21,15 @@ public class MovingBlock : MonoBehaviour
         {
             _Point1.enabled = false;
             _point2.enabled = false;
+        }
+        
+        rb = GetComponentInChildren<Rigidbody>();
+        if (!rb)
+        {
+            Debug.Log("made rb");
+            _block.gameObject.AddComponent<Rigidbody>();
+            rb.isKinematic = true;
+            rb.useGravity = false;
         }
         
         _startPos = _block.transform.position;
@@ -37,6 +47,7 @@ public class MovingBlock : MonoBehaviour
         float pos = Mathf.Sin(Time.time * _moveSpeed);
         
         Vector3 pointPosDiff = _point2.transform.position - _Point1.transform.position;
-        _block.transform.position = _startPos + ((pointPosDiff / 2) * pos);
+        //_block.transform.position = _startPos + ((pointPosDiff / 2) * pos);
+        rb.MovePosition(_startPos + ((pointPosDiff / 2) * pos));
     }
 }

@@ -28,7 +28,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Other")]
     [SerializeField] Vector3 displayVelocity;
-    const float raycastDistance = 0.501f;
+    const float raycastDistance = 0.51f;
     Vector3 lastPos = new();
     
     void Awake()
@@ -87,12 +87,22 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = velocity;
         }
     }
-
+    int counter = 0;
     bool IsCollidingWithWall()
     {
         Vector3 direction = new(rb.velocity.x, 0, 0);
-        if (Raycast(transform.position + wallCollisionOffset, direction)) return true;
-        if (Raycast(transform.position - wallCollisionOffset, direction)) return true;
+        if (Raycast(transform.position + wallCollisionOffset, direction))
+        {
+            Debug.Log("upper ray collision: " + counter);
+            counter++;
+            return true;
+        }
+        if (Raycast(transform.position - wallCollisionOffset, direction))
+        {
+            Debug.Log("lower ray collision: " + counter);
+            counter++;
+            return true;
+        }
 
         return false;
     }
