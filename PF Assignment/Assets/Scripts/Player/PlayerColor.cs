@@ -6,7 +6,6 @@ using UnityEngine;
 [RequireComponent(typeof(Light))]
 public class PlayerColor : MonoBehaviour
 {
-    GameManager _gameManager;
     Renderer _playerRenderer;
     Light _playerLight;
 
@@ -24,8 +23,6 @@ public class PlayerColor : MonoBehaviour
 
     void Start()
     {
-        _gameManager = GameManager.Instance;
-        
         SetColor(_startColor);
     }
 
@@ -74,10 +71,10 @@ public class PlayerColor : MonoBehaviour
 
     void SetColor(GameManager.Color color)
     {
-        Material newMaterial = _gameManager.GetMaterial(color);
+        Material newMaterial = GameManager.Instance.GetMaterial(color);
         _playerRenderer.material = newMaterial;
         _playerLight.color = newMaterial.color;
 
-        _gameManager.AdaptFilters(color);
+        GameManager.Instance.AdaptFilters(color);
     }
 }

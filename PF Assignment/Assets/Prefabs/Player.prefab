@@ -15460,6 +15460,7 @@ MonoBehaviour:
   wallJumpStrength: 7.7
   yVelocityLimit: 12
   baseJumpHeap: 2
+  _sceneLoader: {fileID: 11400000, guid: a664c9985eb481647a4b8175a1e54998, type: 2}
   displayVelocity: {x: 0, y: 0, z: 0}
 --- !u!114 &1909898891569811665
 MonoBehaviour:

@@ -1,17 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "GameManager.asset", menuName = "ScriptableObjects/Singletons/GameManager")]
-public class GameManager : ScriptableObject
+//[CreateAssetMenu(fileName = "GameManager.asset", menuName = "ScriptableObjects/Singletons/GameManager")]
+public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
     int _pickupsCount = 0;
     public int PickupsCount { get{ return _pickupsCount; } }
 
-    [HideInInspector] public List<Filter> filters = new();
+    [HideInInspector] public static List<Filter> filters = new();
 
     public Dictionary<Color, Material> coloredMaterials = new();
 
@@ -26,11 +25,6 @@ public class GameManager : ScriptableObject
         white = 9,
     }
 
-    public void OnEnable()
-    {
-        Setup();
-    }
-
     public void Awake()
     {
         Setup();
@@ -40,9 +34,6 @@ public class GameManager : ScriptableObject
     {
         if (!Instance) Instance = this;
         
-        _pickupsCount = 0;
-
-        coloredMaterials.Clear();
         coloredMaterials.Add(Color.black,  Resources.Load<Material>("Player Materials/Black"));
         coloredMaterials.Add(Color.red,    Resources.Load<Material>("Player Materials/Red"));
         coloredMaterials.Add(Color.green,  Resources.Load<Material>("Player Materials/Green"));
@@ -57,11 +48,13 @@ public class GameManager : ScriptableObject
 
     public Material GetMaterial(Color color)
     {
+        if (coloredMaterials.Count == 0) Setup();
         return coloredMaterials[color];
     }
 
     public void AdaptFilters(Color color)
     {
+        if (filters.Count == 0) Debug.LogWarning("GameManager: is not aware of any filters existing");
         foreach (Filter f in filters)
         {
             if (f.Color == color) f.AllowPassage(true);

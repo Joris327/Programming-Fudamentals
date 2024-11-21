@@ -9,35 +9,34 @@ public class MovingBlock : MonoBehaviour
     [SerializeField] MeshRenderer _point2;
     
     [SerializeField] float _moveSpeed = 2.5f;
-    bool _isTargetingPoint1 = true;
-    [SerializeField] bool _move = false;
+    [SerializeField] bool _canMove = false;
+    [SerializeField] bool _showPoints = true;
+    
+    Vector3 _startPos;
     
     void Awake()
     {
-        //_Point1.enabled = false;
-        //_point2.enabled = false;
+        if (!_showPoints)
+        {
+            _Point1.enabled = false;
+            _point2.enabled = false;
+        }
+        
+        _startPos = _block.transform.position;
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        if (!_move) return;
+        if (!_canMove) return;
         
-        Vector3 targetPos;
+        Movement();
+    }
+    
+    void Movement()
+    {
+        float pos = Mathf.Sin(Time.time * _moveSpeed);
         
-        if (_isTargetingPoint1) targetPos = _Point1.transform.position;
-        else targetPos = _point2.transform.position;
-        
-        float distanceToMove = _moveSpeed * Time.deltaTime;
-        Vector3 delta = targetPos - _block.transform.position;
-        
-        if (delta.magnitude < distanceToMove)
-        {
-            _block.transform.position = targetPos;
-            _isTargetingPoint1 = !_isTargetingPoint1;
-        }
-        else
-        {
-            _block.transform.Translate(delta.normalized * distanceToMove, Space.World);
-        }
+        Vector3 pointPosDiff = _point2.transform.position - _Point1.transform.position;
+        _block.transform.position = _startPos + ((pointPosDiff / 2) * pos);
     }
 }

@@ -7,19 +7,24 @@ using UnityEngine;
 public class Filter : MonoBehaviour
 {
     Renderer _filterRenderer;
-    Collider _filterCollider;
+    BoxCollider _filterCollider;
     [SerializeField] GameManager.Color _color;
     public GameManager.Color Color { get{return _color;} }
 
     [Tooltip("How transparent this objects material should be when the player is allowed through.")]
-    [Range(0,1), SerializeField] float _alphaValue = 0.7f;
+    [Range(0,1), SerializeField] float _alphaValue = 0.5f;
 
     void Awake()
     {
-        if (!TryGetComponent<Renderer>(out _filterRenderer)) _filterRenderer = gameObject.AddComponent<Renderer>();
-        if (!TryGetComponent<Collider>(out _filterCollider)) _filterCollider = gameObject.AddComponent<BoxCollider>();
-
-        GameManager.Instance.filters.Add(this);
+        if (!TryGetComponent<Renderer   >(out _filterRenderer)) _filterRenderer = gameObject.AddComponent<Renderer   >();
+        if (!TryGetComponent<BoxCollider>(out _filterCollider)) _filterCollider = gameObject.AddComponent<BoxCollider>();
+        
+        GameManager.filters.Add(this);
+    }
+    
+    void Start()
+    {
+        
     }
 
     public void AllowPassage(bool set)
@@ -35,6 +40,6 @@ public class Filter : MonoBehaviour
 
     void OnDestroy()
     {
-        GameManager.Instance.filters.Remove(this);
+        GameManager.filters.Remove(this);
     }
 }

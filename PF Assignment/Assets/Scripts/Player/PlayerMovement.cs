@@ -27,7 +27,6 @@ public class PlayerMovement : MonoBehaviour
     readonly Vector3 groundCollisionOffset = new(0.4f, 0, 0);
 
     [Header("Other")]
-    [SerializeField] SceneLoader _sceneLoader;
     [SerializeField] Vector3 displayVelocity;
     const float raycastDistance = 0.501f;
     Vector3 lastPos = new();
@@ -181,12 +180,12 @@ public class PlayerMovement : MonoBehaviour
 
         if (other.CompareTag("Finish"))
         {
-            SceneLoader.Instance.LoadNextScene();
+            SceneLoader.LoadNextScene();
         }
     }
 
     public void OnPause(InputValue v)
     {
-        SceneLoader.Instance.LoadScene(0);
+        SceneLoader.LoadScene(0);
     }
 }
