@@ -76,5 +76,6 @@ public class PlayerColor : MonoBehaviour
         _playerLight.color = newMaterial.color;
 
         GameManager.Instance.AdaptFilters(color);
+        UIManager.Instance.UpdateColourDisplay(color, _r, _g, _b);
     }
 }

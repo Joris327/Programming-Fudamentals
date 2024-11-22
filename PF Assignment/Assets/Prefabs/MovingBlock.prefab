@@ -355,7 +355,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 2
+  m_CollisionDetection: 3
 --- !u!1 &8393064566146716217
 GameObject:
   m_ObjectHideFlags: 0

@@ -21,11 +21,6 @@ public class Filter : MonoBehaviour
         
         GameManager.filters.Add(this);
     }
-    
-    void Start()
-    {
-        
-    }
 
     public void AllowPassage(bool set)
     {
@@ -35,7 +30,6 @@ public class Filter : MonoBehaviour
         if (set) c.a = _alphaValue;
         else c.a = 1;
         _filterRenderer.material.SetColor("_BaseColor", c);
-        //Debug.Log(c.a + ", " + _filterRenderer.material.color.a);
     }
 
     void OnDestroy()

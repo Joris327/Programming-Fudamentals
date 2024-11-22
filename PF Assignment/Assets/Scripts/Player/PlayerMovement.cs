@@ -12,31 +12,32 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] GameObject particlesMoveRight;
 
     [Header("Movement")]
-    [SerializeField] float speed = 5;
-    [SerializeField] bool moveLeft = false;
-    bool hitWall = false;
-    readonly Vector3 wallCollisionOffset = new(0, 0.45f, 0);
+    [SerializeField] float _speed = 5;
+    [SerializeField] bool _moveLeft = false;
+    [SerializeField] Vector3 _wallBoxcastHalfExtends = new(0.5f, 0.4f, 0.5f);
+    [SerializeField] float _wallBoxcastDistance = 0.1f;
+    bool _hitWall = false;
 
     [Header("Jumping")]
-    bool jumpInput = false;
-    [SerializeField, Tooltip("How high the player will jump when getting input from the keyboard")] float inputJumpStrength = 10.5f;
-    [SerializeField, Tooltip("How high the player will jump when hitting a wall")] float wallJumpStrength = 7.7f;
-    [SerializeField] float yVelocityLimit = 12;
-    [SerializeField] int baseJumpHeap = 2;
-    int jumpHeap;
-    readonly Vector3 groundCollisionOffset = new(0.4f, 0, 0);
+    bool _jumpInput = false;
+    [SerializeField, Tooltip("How high the player will jump when getting input from the keyboard")] float _inputJumpStrength = 10.5f;
+    [SerializeField, Tooltip("How high the player will jump when hitting a wall")] float _wallJumpStrength = 7.7f;
+    [SerializeField] float _yVelocityLimit = 12;
+    [SerializeField] int _baseJumpHeap = 2;
+    int _jumpHeap;
+    [SerializeField] Vector3 _groundBoxcastHalfExtends = new(0.4f, 0.5f, 0.5f);
 
     [Header("Other")]
-    [SerializeField] Vector3 displayVelocity;
-    const float raycastDistance = 0.51f;
-    Vector3 lastPos = new();
+    int _pickupsCount = 0;
+    [SerializeField] Vector3 _displayVelocity;
+    Vector3 _lastPos = new();
     
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         if (!rb) Debug.LogError("Rigidbody not found.");
 
-        jumpHeap = baseJumpHeap;
+        _jumpHeap = _baseJumpHeap;
     }
 
     void FixedUpdate()
@@ -44,103 +45,77 @@ public class PlayerMovement : MonoBehaviour
         VerticalMovement();
         HorizontalMovement();
 
-        lastPos = transform.position;
-        displayVelocity = rb.velocity;
+        _lastPos = transform.position;
+        _displayVelocity = rb.velocity;
+    }
+    
+    void HorizontalMovement()
+    {
+        Vector3 toMove = new(_speed, rb.velocity.y, rb.velocity.z);
+        if (_moveLeft) toMove.x = -toMove.x;
+        rb.velocity = toMove;
+
+        if (rb.velocity.y > _yVelocityLimit) //clamp positive Y velocity to prevent player from jumping way higher than desired.
+        {
+            Vector3 velocity = rb.velocity;
+            velocity.y = _yVelocityLimit;
+            rb.velocity = velocity;
+        }
     }
 
     void VerticalMovement()
     {
-        if (hitWall)
+        if (_hitWall)
         {
             Jump(false);
-            hitWall = false;
+            _hitWall = false;
         }
-
-        if (IsCollidingWithWall() ||
-            lastPos == transform.position) // <- if we haven't moved since last frame we are probably stuck in a corner and we should reverse course.
+        
+        Vector3 castDirection = new(rb.velocity.x, 0, 0);
+        if (Raycast(_wallBoxcastHalfExtends, castDirection) || //checks if we collided with a wall
+            _lastPos == transform.position) // <- if we haven't moved since last frame we are probably stuck in a corner and we should reverse course.
         {
-            moveLeft = !moveLeft;
-            hitWall = true;
+            _moveLeft = !_moveLeft;
+            _hitWall = true;
 
             //particlesMoveleft.SetActive(moveLeft);
             //particlesMoveRight.SetActive(!moveLeft);
         }
 
-        if (IsGrounded())
+        if (Raycast(_groundBoxcastHalfExtends, Vector3.down)) //if: grounded
         {
-            jumpHeap = baseJumpHeap;
+            _jumpHeap = _baseJumpHeap;
         }
 
-        if (jumpInput && jumpHeap > 0) Jump(true);
-    }
-
-    void HorizontalMovement()
-    {
-        Vector3 toMove = new(speed, rb.velocity.y, rb.velocity.z);
-        if (moveLeft) toMove.x = -toMove.x;
-        rb.velocity = toMove;
-
-        if (rb.velocity.y > yVelocityLimit) //clamp positive Y velocity to prevent player from jumping way higher than desired.
+        if (_jumpInput && _jumpHeap > 0)
         {
-            Vector3 velocity = rb.velocity;
-            velocity.y = yVelocityLimit;
-            rb.velocity = velocity;
+            Jump(true);
         }
     }
-    int counter = 0;
-    bool IsCollidingWithWall()
+
+    bool Raycast(Vector3 boxcastHalfExtends, Vector3 castDirection)
     {
-        Vector3 direction = new(rb.velocity.x, 0, 0);
-        if (Raycast(transform.position + wallCollisionOffset, direction))
+        if (Physics.BoxCast(transform.position, boxcastHalfExtends, castDirection, out RaycastHit hitInfo, Quaternion.identity, _wallBoxcastDistance))
         {
-            Debug.Log("upper ray collision: " + counter);
-            counter++;
-            return true;
+            if (!hitInfo.transform.gameObject.CompareTag("Structure")) return false;
+                
+            Vector3 collisionDirection = hitInfo.point - transform.position;
+            float angle = Vector3.Angle(transform.position, collisionDirection);
+            if (angle != 180) return true;
         }
-        if (Raycast(transform.position - wallCollisionOffset, direction))
-        {
-            Debug.Log("lower ray collision: " + counter);
-            counter++;
-            return true;
-        }
-
-        return false;
-    }
-
-    bool IsGrounded()
-    {
-        if (Raycast(transform.position + groundCollisionOffset, Vector3.down)) return true;
-        if (Raycast(transform.position - groundCollisionOffset, Vector3.down)) return true;
-
-        return false;
-    }
-
-    bool Raycast(Vector3 origin, Vector3 direction)
-    {
-        if (Physics.Raycast(origin, direction, out RaycastHit hitInfo, raycastDistance))
-        {
-            if (hitInfo.transform.CompareTag("Structure"))
-            {
-                return true;
-            }
-        }
-
-        //Debug.DrawRay(origin, direction * raycastDistance, Color.red, 1);
         
         return false;
     }
 
     void Jump(bool fromPlayerInput)
     {
-        /**/
         if (!fromPlayerInput)
         {
-            rb.AddForce(Vector3.up * wallJumpStrength, ForceMode.Impulse);
+            rb.AddForce(Vector3.up * _wallJumpStrength, ForceMode.Impulse);
             return;
         }
 
-        if (rb.velocity.y < 0)
-        //if falling down: set Y to zero so that when we apply jumpforce we actually go up.
+        if (rb.velocity.y < 0) //if falling down: set Y to zero so that when we apply jumpforce we actually go up.
         {
             rb.velocity = new(
                 rb.velocity.x,
@@ -149,33 +124,16 @@ public class PlayerMovement : MonoBehaviour
             );
         }
 
-        rb.AddForce(Vector3.up * inputJumpStrength, ForceMode.Impulse);
-        /**/
-        /**
-        Vector3 newVelocity = new(
-            rb.velocity.x,
-            0,
-            rb.velocity.z
-        );
-        
-        if (fromPlayerInput) newVelocity.y = inputJumpStrength;
-        else {
-            newVelocity.y = wallJumpStrength;
-            rb.velocity = newVelocity;
-            return;
-        }
-
-        rb.velocity = newVelocity;
-        /**/
-        jumpHeap--;
-        jumpInput = false;
+        rb.AddForce(Vector3.up * _inputJumpStrength, ForceMode.Impulse);
+        _jumpHeap--;
+        _jumpInput = false;
     }
 
     public void OnJump(InputValue v)
     {
-        if (v.Get<float>() > 0 && jumpHeap > 0)
+        if (v.Get<float>() > 0 && _jumpHeap > 0)
         {
-            jumpInput = true;
+            _jumpInput = true;
         }
     }
 
@@ -183,7 +141,8 @@ public class PlayerMovement : MonoBehaviour
     {
         if (other.CompareTag("Pickup"))
         {
-            GameManager.Instance.IncrementPickupCount();
+            _pickupsCount++;
+            UIManager.Instance.UpdatePickupText(_pickupsCount);
 
             Destroy(other.gameObject);
         }
