@@ -50,7 +50,6 @@ public class GameManager : MonoBehaviour
 
     public Material GetMaterial(Color color)
     {
-        Debug.Log(color);
         if (coloredMaterials.Count == 0) Setup();
         return coloredMaterials[color];
     }

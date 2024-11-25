@@ -15538,15 +15538,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   particlesMoveleft: {fileID: 313525417493207357}
   particlesMoveRight: {fileID: 4392746375736219971}
-  speed: 5
-  moveLeft: 0
+  _speed: 250
+  _moveLeft: 0
   _wallBoxcastHalfExtends: {x: 0.5, y: 0.4, z: 0.5}
   _wallBoxcastDistance: 0.1
-  inputJumpStrength: 10.5
-  wallJumpStrength: 7.7
-  yVelocityLimit: 12
-  baseJumpHeap: 2
-  displayVelocity: {x: 0, y: 0, z: 0}
+  _inputJumpStrength: 10.5
+  _wallJumpStrength: 7.7
+  _yVelocityLimit: 12
+  _baseJumpHeap: 2
+  _groundBoxcastHalfExtends: {x: 0.4, y: 0.5, z: 0.5}
+  _displayVelocity: {x: 0, y: 0, z: 0}
 --- !u!114 &1909898891569811665
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15721,7 +15722,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 4
+  m_Intensity: 3
   m_Range: 20
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208

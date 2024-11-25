@@ -42,25 +42,27 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (_lastPos == rb.position)
+        {
+            _moveLeft = !_moveLeft;
+            _hitWall = true;
+        }
+        
         VerticalMovement();
         HorizontalMovement();
 
         _lastPos = transform.position;
         _displayVelocity = rb.velocity;
     }
-    
+    Vector3 beforevel;
     void HorizontalMovement()
     {
-        Vector3 toMove = new(_speed, rb.velocity.y, rb.velocity.z);
+        //Vector3 toMove = new(_speed, rb.velocity.y, rb.velocity.z);
+        Vector3 toMove = new(_speed  * Time.fixedDeltaTime, 0, 0);
         if (_moveLeft) toMove.x = -toMove.x;
-        rb.velocity = toMove;
-
-        if (rb.velocity.y > _yVelocityLimit) //clamp positive Y velocity to prevent player from jumping way higher than desired.
-        {
-            Vector3 velocity = rb.velocity;
-            velocity.y = _yVelocityLimit;
-            rb.velocity = velocity;
-        }
+        toMove.x -= rb.velocity.x;
+        
+        rb.AddForce(toMove, ForceMode.VelocityChange);
     }
 
     void VerticalMovement()
@@ -70,7 +72,7 @@ public class PlayerMovement : MonoBehaviour
             Jump(false);
             _hitWall = false;
         }
-        
+        /**
         Vector3 castDirection = new(rb.velocity.x, 0, 0);
         if (Raycast(_wallBoxcastHalfExtends, castDirection) || //checks if we collided with a wall
             _lastPos == transform.position) // <- if we haven't moved since last frame we are probably stuck in a corner and we should reverse course.
@@ -81,15 +83,25 @@ public class PlayerMovement : MonoBehaviour
             //particlesMoveleft.SetActive(moveLeft);
             //particlesMoveRight.SetActive(!moveLeft);
         }
-
+        /**/
+        /**
         if (Raycast(_groundBoxcastHalfExtends, Vector3.down)) //if: grounded
         {
             _jumpHeap = _baseJumpHeap;
         }
+        /**/
 
-        if (_jumpInput && _jumpHeap > 0)
+        if (_jumpInput)
         {
             Jump(true);
+        }
+        
+        if (rb.velocity.y > _yVelocityLimit) //clamp positive Y velocity to prevent player from jumping way higher than desired.
+        {
+            rb.AddForce(0, _yVelocityLimit - rb.velocity.y, 0, ForceMode.VelocityChange);
+            //Vector3 velocity = rb.velocity;
+            //velocity.y = _yVelocityLimit;
+            //rb.velocity = velocity;
         }
     }
 
@@ -135,6 +147,42 @@ public class PlayerMovement : MonoBehaviour
         {
             _jumpInput = true;
         }
+    }
+    
+    void OnCollisionEnter(Collision other)
+    {
+        HandleCollisions(other);
+    }
+    
+    void OnCollisionStay(Collision other)
+    {
+        //HandleCollisions(other);
+        //Debug.Log(other.contactCount);
+        //Debug.Log(other.collider.name);
+    }
+    
+    void HandleCollisions(Collision other)
+    {
+        ContactPoint contact = other.GetContact(0);
+        
+        if (!contact.otherCollider.CompareTag("Structure")) return;
+        
+        if (contact.normal.y == 1)
+        {
+            _jumpHeap = _baseJumpHeap;
+        }
+        else if (contact.normal.x == -1)
+        {
+            _moveLeft = true;
+            _hitWall = true;
+        }
+        else if (contact.normal.x == 1)
+        {
+            _moveLeft = false;
+            _hitWall = true;
+        }
+        
+        Debug.DrawRay(contact.point, contact.normal, Color.white);
     }
 
     void OnTriggerEnter(Collider other)
