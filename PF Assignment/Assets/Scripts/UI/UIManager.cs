@@ -2,12 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
-    
+
+    [SerializeField] GameObject _pickupPanel;
+    [SerializeField] GameObject _subpixelPanel;
+    [SerializeField] GameObject _pauseMenu;
     [SerializeField] TextMeshProUGUI _pickupText;
     [SerializeField] RawImage _redSubpixel;
     [SerializeField] RawImage _greenSubpixel;
@@ -27,6 +31,8 @@ public class UIManager : MonoBehaviour
         else Instance = this;
         
         SetAllInactive();
+
+        _pauseMenu.SetActive(false);
     }
     
     public void UpdatePickupText(int pickupCount)
@@ -61,5 +67,15 @@ public class UIManager : MonoBehaviour
         _cyanPixel.gameObject.SetActive(false);
         _yellowPixel.gameObject.SetActive(false);
         _whitePixel.gameObject.SetActive(false);
+    }
+
+    public void SwitchPaused()
+    {
+        _pauseMenu.SetActive(!_pauseMenu.activeSelf);
+        _subpixelPanel.SetActive(!_subpixelPanel.activeSelf);
+        _pickupPanel.SetActive(!_pickupPanel.activeSelf);
+
+        if (Time.timeScale > 0) Time.timeScale = 0.0f;
+        else Time.timeScale = 1.0f;
     }
 }

@@ -14,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement")]
     [SerializeField] float _speed = 5;
     [SerializeField] bool _moveLeft = false;
+    [SerializeField] bool _collisionDetectionThroughRaycast = false;
     [SerializeField] Vector3 _wallBoxcastHalfExtends = new(0.5f, 0.4f, 0.5f);
     [SerializeField] float _wallBoxcastDistance = 0.1f;
     bool _hitWall = false;
@@ -72,24 +73,25 @@ public class PlayerMovement : MonoBehaviour
             Jump(false);
             _hitWall = false;
         }
-        /**
-        Vector3 castDirection = new(rb.velocity.x, 0, 0);
-        if (Raycast(_wallBoxcastHalfExtends, castDirection) || //checks if we collided with a wall
-            _lastPos == transform.position) // <- if we haven't moved since last frame we are probably stuck in a corner and we should reverse course.
-        {
-            _moveLeft = !_moveLeft;
-            _hitWall = true;
 
-            //particlesMoveleft.SetActive(moveLeft);
-            //particlesMoveRight.SetActive(!moveLeft);
-        }
-        /**/
-        /**
-        if (Raycast(_groundBoxcastHalfExtends, Vector3.down)) //if: grounded
+        if (_collisionDetectionThroughRaycast)
         {
-            _jumpHeap = _baseJumpHeap;
+            Vector3 castDirection = new(rb.velocity.x, 0, 0);
+            if (Raycast(_wallBoxcastHalfExtends, castDirection) || //checks if we collided with a wall
+                _lastPos == transform.position) // <- if we haven't moved since last frame we are probably stuck in a corner and we should reverse course.
+            {
+                _moveLeft = !_moveLeft;
+                _hitWall = true;
+
+                //particlesMoveleft.SetActive(moveLeft);
+                //particlesMoveRight.SetActive(!moveLeft);
+            }
+            
+            if (Raycast(_groundBoxcastHalfExtends, Vector3.down)) //if: grounded
+            {
+                _jumpHeap = _baseJumpHeap;
+            }
         }
-        /**/
 
         if (_jumpInput)
         {
@@ -129,11 +131,12 @@ public class PlayerMovement : MonoBehaviour
 
         if (rb.velocity.y < 0) //if falling down: set Y to zero so that when we apply jumpforce we actually go up.
         {
-            rb.velocity = new(
-                rb.velocity.x,
-                0,
-                rb.velocity.z
-            );
+            //rb.velocity = new(
+            //    rb.velocity.x,
+            //    0,
+            //    rb.velocity.z
+            //);
+            rb.AddForce(Vector3.up * -rb.velocity.y, ForceMode.Impulse);
         }
 
         rb.AddForce(Vector3.up * _inputJumpStrength, ForceMode.Impulse);
@@ -148,19 +151,17 @@ public class PlayerMovement : MonoBehaviour
             _jumpInput = true;
         }
     }
+
+    public void OnPause(InputValue v) //Does it makes sense that this is here? no.  Is it the only thing that workes for some reason? yes.
+    {
+        UIManager.Instance.SwitchPaused();
+    }
     
     void OnCollisionEnter(Collision other)
     {
         HandleCollisions(other);
     }
-    
-    void OnCollisionStay(Collision other)
-    {
-        //HandleCollisions(other);
-        //Debug.Log(other.contactCount);
-        //Debug.Log(other.collider.name);
-    }
-    
+
     void HandleCollisions(Collision other)
     {
         ContactPoint contact = other.GetContact(0);
@@ -197,12 +198,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (other.CompareTag("Finish"))
         {
-            SceneLoader.LoadNextScene();
+            GameManager.LoadNextScene();
         }
-    }
-
-    public void OnPause(InputValue v)
-    {
-        SceneLoader.LoadScene(0);
     }
 }
