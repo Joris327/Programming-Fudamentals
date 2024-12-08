@@ -1,13 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 //[CreateAssetMenu(fileName = "GameManager.asset", menuName = "ScriptableObjects/Singletons/GameManager")]
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
+    //these are static because some objects might try to add themselves before the instace variable has been set
     [HideInInspector] public static List<Filter> filters = new();
+    [HideInInspector] public static List<Painter> painters = new();
 
     public Dictionary<Color, Material> coloredMaterials = new();
 
@@ -41,27 +44,70 @@ public class GameManager : MonoBehaviour
         coloredMaterials.Add(Color.green,  Resources.Load<Material>("Player Materials/Green"));
         coloredMaterials.Add(Color.blue,   Resources.Load<Material>("Player Materials/Blue"));
         coloredMaterials.Add(Color.yellow, Resources.Load<Material>("Player Materials/Yellow"));
-        coloredMaterials.Add(Color.magenta, Resources.Load<Material>("Player Materials/Magenta"));
-        coloredMaterials.Add(Color.cyan, Resources.Load<Material>("Player Materials/Cyan"));
+        coloredMaterials.Add(Color.magenta,Resources.Load<Material>("Player Materials/Magenta"));
+        coloredMaterials.Add(Color.cyan,   Resources.Load<Material>("Player Materials/Cyan"));
         coloredMaterials.Add(Color.white,  Resources.Load<Material>("Player Materials/White"));
 
-        Debug.Log("Gamemanager Enabled at: " + Time.time);
+        //Debug.Log("Gamemanager Enabled at: " + Time.time);
     }
 
     public Material GetMaterial(Color color)
     {
-        Debug.Log(color);
         if (coloredMaterials.Count == 0) Setup();
         return coloredMaterials[color];
     }
 
     public void AdaptFilters(Color color)
     {
-        if (filters.Count == 0) Debug.LogWarning("GameManager: is not aware of any filters existing");
+        if (filters == null || filters.Count == 0) return;
+
         foreach (Filter f in filters)
         {
             if (f.Color == color) f.AllowPassage(true);
             else f.AllowPassage(false);
         }
+    }
+
+    public void AdaptPainters(Color color)
+    {
+        if (painters == null || painters.Count == 0) return;
+
+        foreach(Painter f in painters)
+        {
+            Light light = f.GetComponent<Light>();
+            if (!light) continue;
+
+            if (color == Color.black)
+            {
+                light.enabled = true;
+            }
+            else if (color == f.color)
+            {
+                light.enabled = false;
+            }
+        }
+    }
+
+    public static void LoadNextScene()
+    {
+        int sceneToLoad = SceneManager.GetActiveScene().buildIndex + 1;
+
+        if (sceneToLoad >= SceneManager.sceneCountInBuildSettings)
+        {
+            SceneManager.LoadSceneAsync(0);
+            return;
+        }
+
+        SceneManager.LoadSceneAsync(sceneToLoad);
+    }
+
+    public static void LoadMainMenu()
+    {
+        SceneManager.LoadSceneAsync(0);
+    }
+
+    public static void QuitGame()
+    {
+        Application.Quit();
     }
 }

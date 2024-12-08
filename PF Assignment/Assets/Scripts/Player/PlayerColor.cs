@@ -42,17 +42,21 @@ public class PlayerColor : MonoBehaviour
                 _g = false;
                 _b = false;
                 SetColor(GameManager.Color.black);
+                GameManager.Instance.AdaptPainters(color);
                 return;
 
             case GameManager.Color.red:
+                GameManager.Instance.AdaptPainters(color);
                 _r = true;
                 break;
 
             case GameManager.Color.green:
+                GameManager.Instance.AdaptPainters(color);
                 _g = true;
                 break;
 
             case GameManager.Color.blue:
+                GameManager.Instance.AdaptPainters(color);
                 _b = true;
                 break;
 

@@ -1982,6 +1982,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1006497729}
     m_Modifications:
+    - target: {fileID: 2767460561270323279, guid: 4717ff7fdb6ff704cbd5f86a4f047439,
+        type: 3}
+      propertyPath: m_Name
+      value: Filter (Purple)
+      objectReference: {fileID: 0}
     - target: {fileID: 7866004499677207616, guid: 4717ff7fdb6ff704cbd5f86a4f047439,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -2041,11 +2046,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2767460561270323279, guid: 4717ff7fdb6ff704cbd5f86a4f047439,
-        type: 3}
-      propertyPath: m_Name
-      value: Filter (Purple)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2855,7 +2855,7 @@ PrefabInstance:
     - target: {fileID: 7440197675809271989, guid: 526c8791c84e2954fac3509917f4b4b6,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.53
       objectReference: {fileID: 0}
     - target: {fileID: 7440197675809271989, guid: 526c8791c84e2954fac3509917f4b4b6,
         type: 3}
@@ -3080,6 +3080,18 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 21e9cee48cdc7b548bdb02646d2abe40, type: 3}
+--- !u!114 &1397111570 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7706027994167315896, guid: 21e9cee48cdc7b548bdb02646d2abe40,
+    type: 3}
+  m_PrefabInstance: {fileID: 1397111569}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b30e10cf3d26f848ab7a1be3b63412c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1443949713
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3734,6 +3746,16 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1041989431770080117, guid: e6ce5e26ca0e461459dc6806bf0ed23e,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1397111570}
+    - target: {fileID: 1041989431770080117, guid: e6ce5e26ca0e461459dc6806bf0ed23e,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: LoadMainMenu
+      objectReference: {fileID: 0}
     - target: {fileID: 2305314675110166200, guid: e6ce5e26ca0e461459dc6806bf0ed23e,
         type: 3}
       propertyPath: m_IsActive
@@ -3849,6 +3871,16 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7788585297068071280, guid: e6ce5e26ca0e461459dc6806bf0ed23e,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1397111570}
+    - target: {fileID: 7788585297068071280, guid: e6ce5e26ca0e461459dc6806bf0ed23e,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: QuitGame
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3862,6 +3894,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1006497729}
     m_Modifications:
+    - target: {fileID: 3384895038513654893, guid: 16a6b121aeb3cfa488ef46408e0b63d4,
+        type: 3}
+      propertyPath: m_Name
+      value: Painter (Blue)
+      objectReference: {fileID: 0}
     - target: {fileID: 8739508627221489501, guid: 16a6b121aeb3cfa488ef46408e0b63d4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3911,11 +3948,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3384895038513654893, guid: 16a6b121aeb3cfa488ef46408e0b63d4,
-        type: 3}
-      propertyPath: m_Name
-      value: Painter (Blue)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
