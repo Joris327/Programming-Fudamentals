@@ -8,6 +8,8 @@ public class PlayerColor : MonoBehaviour
 {
     Renderer _playerRenderer;
     Light _playerLight;
+    [SerializeField] float _redLightIntensity = 5;
+    [SerializeField] float _defaultLightIntensity = 3;
 
     [SerializeField] GameManager.Color _startColor = 0;
 
@@ -78,6 +80,9 @@ public class PlayerColor : MonoBehaviour
         Material newMaterial = GameManager.Instance.GetMaterial(color);
         _playerRenderer.material = newMaterial;
         _playerLight.color = newMaterial.color;
+        
+        if (color == GameManager.Color.red) _playerLight.intensity = _redLightIntensity;
+        else _playerLight.intensity = _defaultLightIntensity;
 
         GameManager.Instance.AdaptFilters(color);
         UIManager.Instance.UpdateColourDisplay(color, _r, _g, _b);

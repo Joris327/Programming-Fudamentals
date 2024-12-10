@@ -137,7 +137,7 @@ MonoBehaviour:
   _point2: {fileID: 9007980989666064915}
   _moveSpeed: 1.5
   _canMove: 1
-  _showPoints: 1
+  _showPoints: 0
 --- !u!108 &6800138805358538003
 Light:
   m_ObjectHideFlags: 0

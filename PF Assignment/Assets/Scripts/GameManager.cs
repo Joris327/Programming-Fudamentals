@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.SceneManagement;
 
-//[CreateAssetMenu(fileName = "GameManager.asset", menuName = "ScriptableObjects/Singletons/GameManager")]
-public class GameManager : MonoBehaviour
+[CreateAssetMenu(fileName = "GameManager.asset", menuName = "ScriptableObjects/Singletons/GameManager")]
+public class GameManager : ScriptableObject
 {
     public static GameManager Instance { get; private set; }
 
@@ -25,19 +26,32 @@ public class GameManager : MonoBehaviour
         white = 9,
     }
 
-    public void Awake()
+    void Awake()
     {
         Setup();
+        Debug.Log("GameManager enabled through Awake.");
+    }
+    
+    void OnEnable()
+    {
+        Setup();
+        Debug.Log("GameManager enabled through OnEnable.");
     }
 
     void Setup()
     {
+        if (Instance != null && Instance == this) return;
         if (Instance != null && Instance != this)
         {
-            Debug.LogWarning("There is more then one GameManager in the scene, the duplicate will destroy itself");
-            Destroy(this);
+            Debug.LogWarning("There is more then one GameManager in the scene");
+            //Destroy(this);
+            return;
         }
-        else Instance = this;
+        else
+        {
+            Instance = this;
+            Debug.Log("GameManager Instance set");
+        }
         
         coloredMaterials.Add(Color.black,  Resources.Load<Material>("Player Materials/Black"));
         coloredMaterials.Add(Color.red,    Resources.Load<Material>("Player Materials/Red"));
