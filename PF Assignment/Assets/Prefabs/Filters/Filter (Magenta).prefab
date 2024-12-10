@@ -11,13 +11,18 @@ PrefabInstance:
     - target: {fileID: 584163710011076944, guid: ee05e3aef08f282409fd25efdefc123e,
         type: 3}
       propertyPath: m_Name
-      value: Filter (Purple)
+      value: Filter (Magenta)
       objectReference: {fileID: 0}
     - target: {fileID: 2753379058631719329, guid: ee05e3aef08f282409fd25efdefc123e,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: bf43c2b232ff6ab479a7f89bbfeb0fcc, type: 2}
+    - target: {fileID: 2851490998637520335, guid: ee05e3aef08f282409fd25efdefc123e,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3119941774981652043, guid: ee05e3aef08f282409fd25efdefc123e,
         type: 3}
       propertyPath: color
@@ -76,6 +81,16 @@ PrefabInstance:
     - target: {fileID: 4851795245876876639, guid: ee05e3aef08f282409fd25efdefc123e,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5715592524690154865, guid: ee05e3aef08f282409fd25efdefc123e,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8405383308974202563, guid: ee05e3aef08f282409fd25efdefc123e,
+        type: 3}
+      propertyPath: m_Color.g
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

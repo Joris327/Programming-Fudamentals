@@ -30,6 +30,9 @@ public class Filter : MonoBehaviour
         if (set) c.a = _alphaValue;
         else c.a = 1;
         _filterRenderer.material.SetColor("_BaseColor", c);
+        
+        Light[] lights = GetComponentsInChildren<Light>();
+        foreach (Light l in lights) l.enabled = !set;
     }
 
     void OnDestroy()
