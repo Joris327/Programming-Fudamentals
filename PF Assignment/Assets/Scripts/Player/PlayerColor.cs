@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Renderer))]
@@ -12,6 +13,7 @@ public class PlayerColor : MonoBehaviour
     [SerializeField] float _defaultLightIntensity = 3;
 
     [SerializeField] GameManager.Color _startColor = 0;
+    [SerializeField] ParticleSystem _trail;
 
     bool _r = false;
     bool _g = false;
@@ -81,9 +83,23 @@ public class PlayerColor : MonoBehaviour
         _playerRenderer.material = newMaterial;
         _playerLight.color = newMaterial.color;
         
+        if (_trail)
+        {
+            var main = _trail.main;
+            
+            if (color == GameManager.Color.black)
+            {
+                main.startColor = Color.white;
+            }
+            else
+            {
+                main.startColor = newMaterial.color;
+            }
+        }
+        
         if (color == GameManager.Color.red) _playerLight.intensity = _redLightIntensity;
         else _playerLight.intensity = _defaultLightIntensity;
-
+        
         GameManager.Instance.AdaptFilters(color);
         UIManager.Instance.UpdateColourDisplay(color, _r, _g, _b);
     }
