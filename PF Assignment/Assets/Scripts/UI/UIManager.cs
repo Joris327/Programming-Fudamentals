@@ -2,17 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
-    [SerializeField] GameObject _pickupPanel;
-    [SerializeField] GameObject _subpixelPanel;
+    //[SerializeField] GameObject _pickupPanel;
+    //[SerializeField] GameObject _subpixelPanel;
+    [SerializeField] GameObject _gameUI;
     [SerializeField] GameObject _pauseMenu;
+
     [SerializeField] TextMeshProUGUI _pickupText;
+
     [SerializeField] RawImage _redSubpixel;
     [SerializeField] RawImage _greenSubpixel;
     [SerializeField] RawImage _blueSubpixel;
@@ -23,16 +25,20 @@ public class UIManager : MonoBehaviour
     
     void Awake()
     {
+        if (Instance == this) return;
         if (Instance != null && Instance != this)
         {
-            Debug.LogWarning("There is more then one UIManager in the scene, the duplicate will destroy itself");
+            Debug.LogWarning("There is more than one UIManager in the scene");
             Destroy(this);
+            return;
         }
-        else Instance = this;
-        
-        SetAllInactive();
+        else
+        {
+            Instance = this;
+            Debug.Log("UIManager Instance set");
+        }
 
-        _pauseMenu.SetActive(false);
+        SetAllPixelsInactive();
     }
     
     public void UpdatePickupText(int pickupCount)
@@ -42,7 +48,7 @@ public class UIManager : MonoBehaviour
     
     public void UpdateColourDisplay(GameManager.Color color, bool r, bool g, bool b)
     {
-        SetAllInactive();
+        SetAllPixelsInactive();
         
         if (color == GameManager.Color.black) return;
         if (r) _redSubpixel.gameObject.SetActive(true);
@@ -58,7 +64,7 @@ public class UIManager : MonoBehaviour
         }
     }
     
-    void SetAllInactive()
+    void SetAllPixelsInactive()
     {
         _redSubpixel.gameObject.SetActive(false);
         _greenSubpixel.gameObject.SetActive(false);
@@ -69,13 +75,15 @@ public class UIManager : MonoBehaviour
         _whitePixel.gameObject.SetActive(false);
     }
 
-    public void SwitchPaused()
+    public void EnablePauseMenu()
     {
-        _pauseMenu.SetActive(!_pauseMenu.activeSelf);
-        _subpixelPanel.SetActive(!_subpixelPanel.activeSelf);
-        _pickupPanel.SetActive(!_pickupPanel.activeSelf);
+        _pauseMenu.SetActive(true);
+        _gameUI.SetActive(false);
+    }
 
-        if (Time.timeScale > 0) Time.timeScale = 0.0f;
-        else Time.timeScale = 1.0f;
+    public void EnableGameUI()
+    {
+        _pauseMenu.SetActive(false);
+        _gameUI.SetActive(true);
     }
 }

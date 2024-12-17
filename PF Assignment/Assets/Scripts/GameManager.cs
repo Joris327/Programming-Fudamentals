@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.SceneManagement;
 
 [CreateAssetMenu(fileName = "GameManager.asset", menuName = "ScriptableObjects/Singletons/GameManager")]
@@ -15,7 +14,8 @@ public class GameManager : ScriptableObject
 
     public Dictionary<Color, Material> coloredMaterials = new();
 
-    public enum Color { 
+    public enum Color
+    { 
         black = 0,
         red = 2,
         green = 3,
@@ -25,6 +25,14 @@ public class GameManager : ScriptableObject
         cyan = 7,
         white = 9,
     }
+
+    public enum GameState
+    {
+        inMainMenu,
+        inGame,
+        isPaused
+    }
+    public GameState CurrentState { get; private set; } = GameState.inMainMenu;
 
     void Awake()
     {
@@ -40,11 +48,10 @@ public class GameManager : ScriptableObject
 
     void Setup()
     {
-        if (Instance != null && Instance == this) return;
+        if (Instance == this) return;
         if (Instance != null && Instance != this)
         {
-            Debug.LogWarning("There is more then one GameManager in the scene");
-            //Destroy(this);
+            Debug.LogWarning("There is more than one GameManager in the project files");
             return;
         }
         else
@@ -52,7 +59,9 @@ public class GameManager : ScriptableObject
             Instance = this;
             Debug.Log("GameManager Instance set");
         }
-        
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+
         coloredMaterials.Add(Color.black,  Resources.Load<Material>("Player Materials/Black"));
         coloredMaterials.Add(Color.red,    Resources.Load<Material>("Player Materials/Red"));
         coloredMaterials.Add(Color.green,  Resources.Load<Material>("Player Materials/Green"));
@@ -61,8 +70,16 @@ public class GameManager : ScriptableObject
         coloredMaterials.Add(Color.magenta,Resources.Load<Material>("Player Materials/Magenta"));
         coloredMaterials.Add(Color.cyan,   Resources.Load<Material>("Player Materials/Cyan"));
         coloredMaterials.Add(Color.white,  Resources.Load<Material>("Player Materials/White"));
+    }
 
-        //Debug.Log("Gamemanager Enabled at: " + Time.time);
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        PauseGame(false);
     }
 
     public Material GetMaterial(Color color)
@@ -102,7 +119,7 @@ public class GameManager : ScriptableObject
         }
     }
 
-    public static void LoadNextScene()
+    public void LoadNextScene()
     {
         int sceneToLoad = SceneManager.GetActiveScene().buildIndex + 1;
 
@@ -115,13 +132,35 @@ public class GameManager : ScriptableObject
         SceneManager.LoadSceneAsync(sceneToLoad);
     }
 
-    public static void LoadMainMenu()
+    public void LoadMainMenu()
     {
         SceneManager.LoadSceneAsync(0);
     }
 
-    public static void QuitGame()
+    public void QuitGame()
     {
         Application.Quit();
+    }
+
+    public void PauseGame(bool doPause)
+    {
+        if (!UIManager.Instance) return;
+
+        if (doPause)
+        {
+            Time.timeScale = 0;
+            UIManager.Instance.EnablePauseMenu();
+        }
+        else
+        {
+            Time.timeScale = 1;
+            UIManager.Instance.EnableGameUI();
+        }
+    }
+
+    public void SwitchPause()
+    {
+        if (CurrentState == GameState.isPaused) PauseGame(false);
+        else PauseGame(true);
     }
 }

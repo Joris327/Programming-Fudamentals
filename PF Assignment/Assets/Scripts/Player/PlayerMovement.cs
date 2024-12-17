@@ -8,9 +8,6 @@ public class PlayerMovement : MonoBehaviour
 {
     Rigidbody rb;
 
-    [SerializeField] GameObject particlesMoveleft;
-    [SerializeField] GameObject particlesMoveRight;
-
     [Header("Movement")]
     [SerializeField] float _speed = 5;
     [SerializeField] bool _moveLeft = false;
@@ -82,15 +79,12 @@ public class PlayerMovement : MonoBehaviour
             {
                 _moveLeft = !_moveLeft;
                 _hitWall = true;
+            }
+        }
 
-                //particlesMoveleft.SetActive(moveLeft);
-                //particlesMoveRight.SetActive(!moveLeft);
-            }
-            
-            if (Raycast(_groundBoxcastHalfExtends, Vector3.down)) //if: grounded
-            {
-                _jumpHeap = _baseJumpHeap;
-            }
+        if (Raycast(_groundBoxcastHalfExtends, Vector3.down)) //if: grounded
+        {
+            _jumpHeap = _baseJumpHeap;
         }
 
         if (_jumpInput)
@@ -152,9 +146,9 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void OnPause(InputValue v) //Does it makes sense that this is here? no.  Is it the only thing that workes for some reason? yes.
+    public void OnPause(InputValue v) //Does it makes sense that this is here?  no.  Is it the only thing that workes for some reason?  yes.
     {
-        UIManager.Instance.SwitchPaused();
+        GameManager.Instance.SwitchPause();
     }
     
     void OnCollisionEnter(Collision other)
@@ -198,7 +192,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (other.CompareTag("Finish"))
         {
-            GameManager.LoadNextScene();
+            GameManager.Instance.LoadNextScene();
         }
     }
 }
