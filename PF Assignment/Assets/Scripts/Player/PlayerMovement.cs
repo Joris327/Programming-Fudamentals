@@ -32,8 +32,7 @@ public class PlayerMovement : MonoBehaviour
     
     void Awake()
     {
-        rb = GetComponent<Rigidbody>();
-        if (!rb) Debug.LogError("Rigidbody not found.");
+        if (!TryGetComponent<Rigidbody>(out rb)) Debug.LogError("PlayerMovement: could not find it's Rigidbody");
 
         _jumpHeap = _baseJumpHeap;
     }
@@ -52,13 +51,14 @@ public class PlayerMovement : MonoBehaviour
         _lastPos = transform.position;
         _displayVelocity = rb.velocity;
     }
-    Vector3 beforevel;
+    
     void HorizontalMovement()
     {
-        //Vector3 toMove = new(_speed, rb.velocity.y, rb.velocity.z);
         Vector3 toMove = new(_speed  * Time.fixedDeltaTime, 0, 0);
+        
         if (_moveLeft) toMove.x = -toMove.x;
-        toMove.x -= rb.velocity.x;
+        
+        toMove.x -= rb.velocity.x; //reduce the speed with the current speed we're moving at so we only add the difference.
         
         rb.AddForce(toMove, ForceMode.VelocityChange);
     }
@@ -95,9 +95,6 @@ public class PlayerMovement : MonoBehaviour
         if (rb.velocity.y > _yVelocityLimit) //clamp positive Y velocity to prevent player from jumping way higher than desired.
         {
             rb.AddForce(0, _yVelocityLimit - rb.velocity.y, 0, ForceMode.VelocityChange);
-            //Vector3 velocity = rb.velocity;
-            //velocity.y = _yVelocityLimit;
-            //rb.velocity = velocity;
         }
     }
 
@@ -125,11 +122,6 @@ public class PlayerMovement : MonoBehaviour
 
         if (rb.velocity.y < 0) //if falling down: set Y to zero so that when we apply jumpforce we actually go up.
         {
-            //rb.velocity = new(
-            //    rb.velocity.x,
-            //    0,
-            //    rb.velocity.z
-            //);
             rb.AddForce(Vector3.up * -rb.velocity.y, ForceMode.Impulse);
         }
 
@@ -146,10 +138,10 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void OnPause(InputValue v) //Does it makes sense that this is here?  no.  Is it the only thing that workes for some reason?  yes.
-    {
-        GameManager.Instance.SwitchPause();
-    }
+    //public void OnPause(InputValue v) //Does it makes sense that this is here?  no.  Is it the only thing that workes for some reason?  yes.
+    //{
+    //    GameManager.Instance.SwitchPause();
+    //}
     
     void OnCollisionEnter(Collision other)
     {
@@ -177,7 +169,7 @@ public class PlayerMovement : MonoBehaviour
             _hitWall = true;
         }
         
-        Debug.DrawRay(contact.point, contact.normal, Color.white);
+        //Debug.DrawRay(contact.point, contact.normal, Color.white);
     }
 
     void OnTriggerEnter(Collider other)

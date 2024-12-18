@@ -2,35 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//[RequireComponent(typeof(Rigidbody))] //cannot do because the rb is on a child object
 public class MovingBlock : MonoBehaviour
 {
     [SerializeField] Transform _block;
-    [SerializeField] MeshRenderer _Point1;
-    [SerializeField] MeshRenderer _point2;
+    [SerializeField] MeshRenderer _waypoint1;
+    [SerializeField] MeshRenderer _waypoint2;
     
     [SerializeField] float _moveSpeed = 2.5f;
     [SerializeField] bool _canMove = false;
-    [SerializeField] bool _showPoints = true;
+    [SerializeField] bool _showWaypoints = true;
     
     Rigidbody rb;
     Vector3 _startPos;
     
     void Awake()
     {
-        if (!_showPoints)
+        if (!_showWaypoints)
         {
-            _Point1.enabled = false;
-            _point2.enabled = false;
+            _waypoint1.enabled = false;
+            _waypoint2.enabled = false;
         }
         
-        rb = GetComponentInChildren<Rigidbody>();
-        if (!rb)
-        {
-            Debug.Log("made rb");
-            _block.gameObject.AddComponent<Rigidbody>();
-            rb.isKinematic = true;
-            rb.useGravity = false;
-        }
+        if (!_block.TryGetComponent<Rigidbody>(out rb)) Debug.LogError("MovingBlock: could not find it's childs Rigidbody");
         
         _startPos = _block.transform.position;
     }
@@ -46,7 +40,7 @@ public class MovingBlock : MonoBehaviour
     {
         float pos = Mathf.Sin(Time.time * _moveSpeed);
         
-        Vector3 pointPosDiff = _point2.transform.position - _Point1.transform.position;
+        Vector3 pointPosDiff = _waypoint2.transform.position - _waypoint1.transform.position;
         //_block.transform.position = _startPos + ((pointPosDiff / 2) * pos);
         rb.MovePosition(_startPos + ((pointPosDiff / 2) * pos));
     }

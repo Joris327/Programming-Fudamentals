@@ -25,7 +25,8 @@ public class Filter : MonoBehaviour
     public void AllowPassage(bool set)
     {
         _filterCollider.enabled = !set;
-
+        
+        // Set the transparancy value for the material.
         Color c = _filterRenderer.material.color;
         if (set) c.a = _alphaValue;
         else c.a = 1;

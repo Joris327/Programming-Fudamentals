@@ -6,7 +6,8 @@ public class MainCamera : MonoBehaviour
 {
     Transform player;
     Vector3 lastPos;
-
+    
+    [Tooltip("To what degree we follow the player directly or lag behind.")]
     [SerializeField, Range(0,1)] float followFraction = 0.935f;
 
     void Awake()

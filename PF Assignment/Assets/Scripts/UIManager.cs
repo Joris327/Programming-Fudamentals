@@ -7,9 +7,7 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
-
-    //[SerializeField] GameObject _pickupPanel;
-    //[SerializeField] GameObject _subpixelPanel;
+    
     [SerializeField] GameObject _gameUI;
     [SerializeField] GameObject _pauseMenu;
 
@@ -85,5 +83,11 @@ public class UIManager : MonoBehaviour
     {
         _pauseMenu.SetActive(false);
         _gameUI.SetActive(true);
+    }
+    
+    void OnCancel()
+    {
+        Debug.Log("trigger");
+        GameManager.Instance.SwitchPause();
     }
 }
