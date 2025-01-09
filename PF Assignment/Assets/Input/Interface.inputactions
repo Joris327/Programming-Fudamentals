@@ -1,8 +1,8 @@
 {
-    "name": "Interface",
+    "name": "interface",
     "maps": [
         {
-            "name": "Interface",
+            "name": "PauseMenu",
             "id": "9eb8d3b8-d6b1-46c9-8e95-a1d839c50def",
             "actions": [
                 {

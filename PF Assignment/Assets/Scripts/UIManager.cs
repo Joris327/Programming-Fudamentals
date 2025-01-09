@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
+    Interface pauseMenu;
     
     [SerializeField] GameObject _gameUI;
     [SerializeField] GameObject _pauseMenu;
@@ -36,9 +37,20 @@ public class UIManager : MonoBehaviour
             Debug.Log("UIManager Instance set");
         }
 
+        pauseMenu = new();
+        pauseMenu.Enable();
+
         SetAllPixelsInactive();
     }
-    
+
+    private void Update()
+    {
+        if (pauseMenu.PauseMenu.Pause.WasPerformedThisFrame())
+        {
+            GameManager.Instance.SwitchPause();
+        }
+    }
+
     public void UpdatePickupText(int pickupCount)
     {
         _pickupText.text = pickupCount.ToString();
