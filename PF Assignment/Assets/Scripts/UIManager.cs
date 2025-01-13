@@ -2,15 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
-    Interface pauseMenu;
+    Interface _interfaceInput;
     
     [SerializeField] GameObject _gameUI;
     [SerializeField] GameObject _pauseMenu;
+    public RectTransform _currentPopup;
 
     [SerializeField] TextMeshProUGUI _pickupText;
 
@@ -37,18 +39,18 @@ public class UIManager : MonoBehaviour
             Debug.Log("UIManager Instance set");
         }
 
-        pauseMenu = new();
-        pauseMenu.Enable();
+        _interfaceInput = new();
 
         SetAllPixelsInactive();
+        
+        Time.timeScale = 0;
+        GameManager.Instance.CurrentState = GameManager.GameState.onLevelStart;
     }
 
-    private void Update()
+    private void Start()
     {
-        if (pauseMenu.PauseMenu.Pause.WasPerformedThisFrame())
-        {
-            GameManager.Instance.SwitchPause();
-        }
+        _interfaceInput.GameInterface.Pause.performed += SwitchPause;
+        _interfaceInput.GameInterface.Start.performed += CloseCurrentPopup;
     }
 
     public void UpdatePickupText(int pickupCount)
@@ -84,22 +86,53 @@ public class UIManager : MonoBehaviour
         _yellowPixel.gameObject.SetActive(false);
         _whitePixel.gameObject.SetActive(false);
     }
-
-    public void EnablePauseMenu()
+    
+    void CloseCurrentPopup(InputAction.CallbackContext context)
     {
-        _pauseMenu.SetActive(true);
-        _gameUI.SetActive(false);
-    }
-
-    public void EnableGameUI()
-    {
-        _pauseMenu.SetActive(false);
-        _gameUI.SetActive(true);
+        if (!_currentPopup) return;
+        
+        //_currentPopup.gameObject.SetActive(false);
+        Destroy(_currentPopup.gameObject);
+        GameManager.Instance.CurrentState = GameManager.GameState.inGame;
+        Time.timeScale = 1;
     }
     
-    void OnCancel()
+    public void PauseGame(bool doPause)
     {
-        Debug.Log("trigger");
-        GameManager.Instance.SwitchPause();
+        if (GameManager.Instance.CurrentState == GameManager.GameState.onLevelStart) return;
+        if (!Instance) return;
+
+        if (doPause)
+        {
+            Time.timeScale = 0;
+            GameManager.Instance.CurrentState = GameManager.GameState.isPaused;
+            
+            _pauseMenu.SetActive(true);
+            _gameUI.SetActive(false);
+        }
+        else
+        {
+            Time.timeScale = 1;
+            GameManager.Instance.CurrentState = GameManager.GameState.inGame;
+            
+            _pauseMenu.SetActive(false);
+            _gameUI.SetActive(true);
+        }
+    }
+
+    public void SwitchPause(InputAction.CallbackContext context)
+    {
+        if (GameManager.Instance.CurrentState == GameManager.GameState.isPaused) PauseGame(false);
+        else PauseGame(true);
+    }
+    
+    void OnEnable()
+    {
+        _interfaceInput.Enable();
+    }
+    
+    void OnDisable()
+    {
+        _interfaceInput.Disable();
     }
 }

@@ -9,8 +9,8 @@ public class GameManager : ScriptableObject
     public static GameManager Instance { get; private set; }
 
     //these are static because some objects might try to add themselves before the instace variable has been set
-    [HideInInspector] public static List<Filter> filters = new();
-    [HideInInspector] public static List<Painter> painters = new();
+    [HideInInspector] public readonly static List<Filter> filters = new();
+    [HideInInspector] public readonly static List<Painter> painters = new();
 
     public Dictionary<Color, Material> coloredMaterials = new();
 
@@ -29,10 +29,11 @@ public class GameManager : ScriptableObject
     public enum GameState
     {
         inMainMenu,
+        onLevelStart,
         inGame,
         isPaused
     }
-    public GameState CurrentState { get; private set; } = GameState.inMainMenu;
+    public GameState CurrentState { get; set; } = GameState.inMainMenu;
 
     void Awake()
     {
@@ -79,7 +80,7 @@ public class GameManager : ScriptableObject
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        PauseGame(false);
+        if (UIManager.Instance) UIManager.Instance.PauseGame(false);
     }
 
     public Material GetMaterial(Color color)
@@ -140,27 +141,5 @@ public class GameManager : ScriptableObject
     public void QuitGame()
     {
         Application.Quit();
-    }
-
-    public void PauseGame(bool doPause)
-    {
-        if (!UIManager.Instance) return;
-
-        if (doPause)
-        {
-            Time.timeScale = 0;
-            UIManager.Instance.EnablePauseMenu();
-        }
-        else
-        {
-            Time.timeScale = 1;
-            UIManager.Instance.EnableGameUI();
-        }
-    }
-
-    public void SwitchPause()
-    {
-        if (CurrentState == GameState.isPaused) PauseGame(false);
-        else PauseGame(true);
     }
 }
