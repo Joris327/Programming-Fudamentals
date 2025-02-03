@@ -13,6 +13,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] GameObject _gameUI;
     [SerializeField] GameObject _pauseMenu;
     public RectTransform _currentPopup;
+    [SerializeField] bool closePopupOnStart = false;
 
     [SerializeField] TextMeshProUGUI _pickupText;
 
@@ -51,6 +52,7 @@ public class UIManager : MonoBehaviour
     {
         _interfaceInput.GameInterface.Pause.performed += SwitchPause;
         _interfaceInput.GameInterface.Start.performed += CloseCurrentPopup;
+        if (closePopupOnStart) CloseCurrentPopup(new InputAction.CallbackContext());
     }
 
     public void UpdatePickupText(int pickupCount)
@@ -133,6 +135,8 @@ public class UIManager : MonoBehaviour
     
     void OnDisable()
     {
+        _interfaceInput.GameInterface.Pause.performed -= SwitchPause;
+        _interfaceInput.GameInterface.Start.performed -= CloseCurrentPopup;
         _interfaceInput.Disable();
     }
 }
